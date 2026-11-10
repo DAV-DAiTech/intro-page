@@ -1,0 +1,26 @@
+---
+import { useTranslations } from '../../i18n';
+
+const t = useTranslations(Astro.currentLocale);
+
+const notes = [
+  ['notes.item1.title', 'notes.item1.body'],
+  ['notes.item2.title', 'notes.item2.body'],
+  ['notes.item3.title', 'notes.item3.body']
+] as const;
+---
+<aside class="club-notes" aria-labelledby="club-notes-title">
+  <h2 id="club-notes-title">{t('notes.titleLine1')}<br />{t('notes.titleLine2')}</h2>
+  <p>{t('notes.intro')}</p>
+  {notes.map(([title, body]) => <div class="note"><h3>{t(title)}</h3><p>{t(body)}</p></div>)}
+</aside>
+
+<style>
+  .club-notes { padding: clamp(1.5rem, 3vw, 2.75rem); background: light-dark(#465b83, #4a6091); color: light-dark(#fff5e1, #f1d6cf); border-radius: .375rem; min-width: 0; }
+  h2 { font-size: calc(clamp(1.75rem, 1.3rem + 1vw, 2.125rem) * var(--text-scale)); font-weight: var(--heading-weight); line-height: 1.25; letter-spacing: -.06em; }
+  p { margin-top: 1rem; line-height: 1.7; font-size: var(--text-body); }
+  .note { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid light-dark(#fff5e180, #f1d6cf80); }
+  h3 { font-size: calc(1.25rem * var(--text-scale)); line-height: 1.4; font-weight: var(--heading-weight); letter-spacing: -.04em; }
+  .note p { margin-top: .625rem; font-size: var(--text-ui); }
+  @media (forced-colors: active) { .club-notes { background: Canvas; color: CanvasText; border: 1px solid CanvasText; } }
+</style>

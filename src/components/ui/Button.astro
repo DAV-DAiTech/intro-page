@@ -1,0 +1,17 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon, { type IconName } from '../Icon.astro';
+
+interface Props extends HTMLAttributes<'a'> {
+  variant?: 'plum' | 'canvas';
+  icon?: IconName;
+  iconSize?: number;
+}
+
+const { variant = 'plum', icon = 'arrow', iconSize = 18, class: className, ...attributes } = Astro.props;
+---
+<a {...attributes} class:list={['button', `button-${variant}`, className]}>
+  <slot />
+  <Icon name={icon} size={iconSize} />
+  <slot name="suffix" />
+</a>

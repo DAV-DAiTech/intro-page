@@ -1,0 +1,58 @@
+---
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import { getLocale, homePath, locales, useTranslations } from '../i18n';
+
+import '@fontsource-variable/inter';
+import '@fontsource/special-gothic-expanded-one/400.css';
+import bodyFontUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import headingFontUrl from '@fontsource/special-gothic-expanded-one/files/special-gothic-expanded-one-latin-400-normal.woff2?url';
+import globalCss from '../styles/global.css?raw';
+import '../styles/global.css';
+
+const t = useTranslations(Astro.currentLocale);
+
+interface Props {
+  title?: string; description?: string; socialTitle?: string; socialDescription?: string;
+  image?: string; preloadImage?: string; noindex?: boolean; schema?: unknown;
+}
+
+const {
+  title = t('meta.title'),
+  description = t('meta.description'),
+  socialTitle = t('meta.socialTitle'),
+  socialDescription = t('meta.socialDescription'),
+  image = '/images/club-artwork.webp', preloadImage, noindex = false, schema
+} = Astro.props;
+const preloadFonts = [headingFontUrl, bodyFontUrl];
+const [, lightTheme = '#98472e', darkTheme = '#291b22'] = globalCss.match(/--canvas:\s*light-dark\((#[0-9a-fA-F]+),\s*(#[0-9a-fA-F]+)\)/) ?? [];
+---
+<!doctype html>
+<html lang={t('site.lang')}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="text-scale" content="scale" />
+    <meta name="theme-color" content={lightTheme} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={darkTheme} media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+    {preloadFonts.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+    <slot name="head" />
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main">{t('nav.skipToContent')}</a>
+    <SiteHeader />
+    <main id="main" tabindex="-1"><slot /></main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .skip-link { position: fixed; top: -10rem; left: 1rem; padding: .875rem 1.25rem; background: var(--surface); color: var(--text); z-index: 100; border-radius: .625rem; font-size: var(--text-ui); text-decoration: underline; }
+  .skip-link:focus { top: 1rem; }
+</style>

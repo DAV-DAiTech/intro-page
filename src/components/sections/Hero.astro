@@ -1,0 +1,43 @@
+---
+import Button from '../ui/Button.astro';
+import { useTranslations } from '../../i18n';
+
+const t = useTranslations(Astro.currentLocale);
+---
+<section class="hero content-width" aria-labelledby="hero-title">
+  <div class="hero-content">
+    <h1 id="hero-title">{t('hero.titleLine1')}<br />{t('hero.titleLine2')}</h1>
+    <div class="hero-photo">
+      <img class="meeting-photo" src="/images/club-meeting.webp" alt={t('hero.imageAlt')} width="1554" height="1077" fetchpriority="high" />
+      <span class="club-seal" aria-hidden="true"><img src="/images/logo.png" alt="" width="112" height="112" /></span>
+    </div>
+  </div>
+  <div class="hero-bottom">
+    <p>{t('hero.description')}</p>
+    <Button variant="canvas" href="#products">{t('hero.cta')}</Button>
+  </div>
+</section>
+
+<style>
+  .hero { padding-block: 1.5rem 2.25rem; }
+  .hero-content { padding-bottom: 2rem; }
+  h1 { font-size: calc(clamp(2.75rem, 1.5rem + 5.6vw, 6.75rem) * var(--text-scale)); line-height: 1.1; font-weight: var(--heading-weight); letter-spacing: -.055em; }
+  .hero-photo { position: relative; margin: 2rem 0 0 4rem; }
+  .meeting-photo { display: block; width: 100%; height: auto; aspect-ratio: 3.1 / 1; object-fit: cover; object-position: center 44%; border-radius: 999px; }
+  .club-seal { position: absolute; left: -2.75rem; bottom: -1rem; display: block; padding: .5rem; background: var(--surface); border: 1px solid var(--control-border); outline: 5px solid var(--surface); border-radius: 50%; transform: rotate(-10deg); }
+  .club-seal img { display: block; width: 6rem; height: 6rem; border-radius: 50%; }
+  .hero-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; margin-top: 1rem; padding-block: 1.5rem; border-block: 1px solid var(--canvas-line); }
+  .hero-bottom p { color: var(--canvas-muted); max-width: 65ch; font-size: var(--text-body); line-height: 1.65; flex: 1 1 30rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root:not([data-reduce-motion])) .club-seal { animation: seal-turn .8s cubic-bezier(.2, .9, .25, 1.15) .15s both; }
+  }
+  @keyframes seal-turn { from { transform: rotate(-70deg) scale(.88); } to { transform: rotate(-10deg) scale(1); } }
+  @media (max-width: 44em) {
+    .hero { padding-top: 1rem; }
+    .hero-photo { margin-left: 1.5rem; }
+    .meeting-photo { aspect-ratio: 1.55 / 1; }
+    .club-seal { left: -1.25rem; bottom: -.75rem; padding: .25rem; outline-width: 3px; }
+    .club-seal img { width: 3.5rem; height: 3.5rem; }
+    .hero-bottom { margin-top: 2rem; }
+  }
+</style>

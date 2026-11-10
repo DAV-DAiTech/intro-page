@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@fontsource-variable/inter':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/special-gothic-expanded-one':
+        specifier: ^5.3.0
+        version: 5.3.0
       astro:
         specifier: ^7.4.8
         version: 7.4.8(yaml@2.9.1)
@@ -204,6 +210,12 @@ packages:
 
   '@emnapi/wasi-threads@1.2.3':
     resolution: {integrity: sha512-ELEBe8PsLvvJ6QMr0zLt8ffvOHW/dc1m3CEzNMg7aJUv3bMaoDtw2TXyDAwkYBuroxxuHEwhRTLJSe5sya547g==}
+
+  '@fontsource-variable/inter@5.3.0':
+    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
+
+  '@fontsource/special-gothic-expanded-one@5.3.0':
+    resolution: {integrity: sha512-XtTKD64TNnKn6by20jgpGsdiI/vDHr3t+ius1YcaS/WRxkDJ+boSIn78gE+3vd1k/ED8jz5P/J0MB9OkiopQGw==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -1413,6 +1425,10 @@ snapshots:
     dependencies:
       tslib: 2.9.1
     optional: true
+
+  '@fontsource-variable/inter@5.3.0': {}
+
+  '@fontsource/special-gothic-expanded-one@5.3.0': {}
 
   '@img/colour@1.1.0':
     optional: true
