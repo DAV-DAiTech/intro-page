@@ -1,5 +1,6 @@
 ---
 import Button from '../ui/Button.astro';
+import AccessibilitySettings from './AccessibilitySettings.astro';
 import { getLocale, homePath, useTranslations } from '../../i18n';
 
 const t = useTranslations(Astro.currentLocale);
@@ -16,6 +17,7 @@ const home = homePath(Astro.currentLocale);
   </nav>
   <div class="header-actions">
     <Button class="nav-cta" variant="canvas" href={`${home}#products`} icon="diagonal">{t('header.cta')}</Button>
+    <AccessibilitySettings />
   </div>
 </header>
 

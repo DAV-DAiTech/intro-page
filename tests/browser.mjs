@@ -5,6 +5,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { chromium } from '@playwright/test';
+import { checkAccessibility } from './accessibility.mjs';
 
 const findBrowser = () => {
   const candidates = [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
@@ -110,6 +111,7 @@ try {
     return new Set(ids).size === ids.length;
   }), 'Reused collections have unique accessible IDs');
   await repeated.close();
+  await checkAccessibility(browser, `${baseUrl}/`);
   assert.deepEqual(errors, [], 'No JavaScript errors');
   console.log('Passed: product links, filters, dialogs, focus restoration, images, reduced motion, 5 responsive widths, and independent reusable collections.');
 } finally {

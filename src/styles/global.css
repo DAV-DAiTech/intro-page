@@ -35,6 +35,36 @@
   color: var(--canvas-text);
   background: var(--canvas);
 }
+:root[data-theme='light'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
+:root[data-font='system'] { --font-body: system-ui, sans-serif; --font-heading: system-ui, sans-serif; --heading-weight: 700; }
+:root[data-font='atkinson'] { --font-body: 'Atkinson Hyperlegible', sans-serif; --font-heading: 'Atkinson Hyperlegible', sans-serif; --heading-weight: 700; }
+:root[data-font='lexend'] { --font-body: 'Lexend Variable', sans-serif; --font-heading: 'Lexend Variable', sans-serif; --heading-weight: 700; }
+:root[data-text-size='large'] { --text-scale: 1.125; }
+:root[data-text-size='larger'] { --text-scale: 1.25; }
+:root[data-contrast='high'] {
+  --text: light-dark(#171014, #fff);
+  --muted: light-dark(#30242a, #fff);
+  --background: light-dark(#fff, #100b10);
+  --surface: light-dark(#fff, #100b10);
+  --line: light-dark(#625058, #eee);
+  --control-border: light-dark(#30242a, #fff);
+  --accent: light-dark(#673625, #ffdbb6);
+  --canvas: light-dark(#78311d, #100b10);
+  --canvas-text: #fff;
+  --canvas-muted: #fff;
+}
+@media (prefers-contrast: more) {
+  :root:not([data-contrast='standard']) {
+    --text: light-dark(#171014, #fff);
+    --muted: light-dark(#30242a, #fff);
+    --line: light-dark(#625058, #eee);
+    --control-border: light-dark(#30242a, #fff);
+    --accent: light-dark(#673625, #ffdbb6);
+    --canvas-text: #fff;
+    --canvas-muted: #fff;
+  }
+}
 *, ::before, ::after { box-sizing: border-box; }
 html { scroll-padding-top: 1.75rem; scrollbar-color: light-dark(var(--canvas), var(--control-border)) var(--surface); }
 body { margin: 0; font-size: var(--text-body); line-height: 1.65; overflow-x: clip; }

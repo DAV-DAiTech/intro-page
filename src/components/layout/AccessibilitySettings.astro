@@ -1,0 +1,55 @@
+---
+import Icon from '../Icon.astro';
+import { useTranslations } from '../../i18n';
+
+const t = useTranslations(Astro.currentLocale);
+
+const fields = [
+  { id: 'reading-theme', key: 'theme', label: 'a11y.appearance', options: [['system', 'a11y.followSystem'], ['light', 'a11y.themeLight'], ['dark', 'a11y.themeDark']] },
+  { id: 'reading-size', key: 'textSize', label: 'a11y.textSize', options: [['default', 'a11y.sizeDefault'], ['large', 'a11y.sizeLarge'], ['larger', 'a11y.sizeLarger']] },
+  { id: 'reading-font', key: 'font', label: 'a11y.font', options: [['default', 'a11y.fontDefault'], ['system', 'a11y.fontSystem'], ['atkinson', 'a11y.fontAtkinson'], ['lexend', 'a11y.fontLexend']] },
+  { id: 'reading-contrast', key: 'contrast', label: 'a11y.contrast', options: [['system', 'a11y.followSystem'], ['standard', 'a11y.contrastStandard'], ['high', 'a11y.contrastHigh']] }
+] as const;
+---
+<button class="button button-canvas settings-trigger" type="button" {...({ commandfor: 'accessibility-settings', command: 'show-modal' } as any)} aria-label={t('a11y.triggerLabel')}>
+  <Icon name="accessibility" size={18} /><span>{t('a11y.trigger')}</span>
+</button>
+<dialog id="accessibility-settings" class="settings-dialog" closedby="any" aria-labelledby="settings-title" aria-describedby="settings-description">
+  <form method="dialog">
+    <button class="dialog-close" aria-label={t('a11y.closeLabel')} autofocus><Icon name="close" size={18} /></button>
+  </form>
+  <h2 id="settings-title">{t('a11y.title')}</h2>
+  <p id="settings-description">{t('a11y.description')}</p>
+  <div class="settings-fields">
+    {fields.map(({ id, key, label, options }) => (
+      <div class="settings-field">
+        <label for={id}>{t(label)}</label>
+        <select id={id} data-preference={key}>{options.map(([value, text]) => <option value={value}>{t(text)}</option>)}</select>
+      </div>
+    ))}
+    <div class="motion-field">
+      <label for="reading-motion"><input id="reading-motion" type="checkbox" data-preference="reduceMotion" aria-describedby="motion-description" /> {t('a11y.reduceMotion')}</label>
+      <p id="motion-description">{t('a11y.reduceMotionHint')}</p>
+    </div>
+  </div>
+  <button class="button reset-preferences" type="button" data-reset-preferences>{t('a11y.reset')}</button>
+</dialog>
+
+<style>
+  .settings-dialog { width: min(36rem, calc(100% - 2rem)); }
+  h2 { font-size: calc(1.75rem * var(--text-scale)); line-height: 1.25; letter-spacing: -.03em; }
+  #settings-description { color: var(--muted); font-size: var(--text-ui); margin-top: 1rem; }
+  .settings-fields { display: grid; gap: 1.25rem; margin-block: 1.75rem; }
+  .settings-field { display: grid; gap: .5rem; }
+  label { font-size: var(--text-ui); font-weight: 600; }
+  select { min-width: 0; width: 100%; min-height: 44px; padding: .65rem .75rem; border: 1px solid var(--control-border); border-radius: .5rem; background: var(--background); font-size: var(--text-ui); }
+  .motion-field label { display: flex; align-items: center; gap: .75rem; min-height: 44px; cursor: pointer; }
+  input { width: 1.25rem; height: 1.25rem; flex-shrink: 0; accent-color: var(--plum); }
+  .motion-field p { font-size: var(--text-small); color: var(--muted); margin-top: .25rem; }
+  .reset-preferences { background: var(--plum); color: var(--on-plum); border-color: var(--control-border); }
+  @media (max-width: 44em) {
+    .settings-trigger { padding: .625rem; }
+    .settings-trigger span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .settings-dialog { padding-inline: 1.25rem; }
+  }
+</style>
