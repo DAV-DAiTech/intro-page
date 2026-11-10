@@ -1,0 +1,42 @@
+---
+import type { Product } from '../../data/products';
+import Button from '../ui/Button.astro';
+import ProductIcon from './Icon.astro';
+import { useTranslations } from '../../i18n';
+
+const t = useTranslations(Astro.currentLocale);
+
+interface Props {
+  product: Product;
+  dialogId: string;
+}
+
+const { product, dialogId } = Astro.props;
+---
+<article class={`product-card ${product.preview}-card`} data-category={product.category}>
+  <div class="product-heading">
+    <ProductIcon name={product.icon} variant={product.preview} />
+    <h3>{product.name}</h3>
+    <span class="category-tag">{product.category}</span>
+  </div>
+  <p class="product-description">{product.description}</p>
+  <div class="product-actions">
+    <Button href={product.url} icon="diagonal" target="_blank" rel="noopener noreferrer" aria-label={t('products.cardCtaLabel', { link: product.link, name: product.name })}>
+      {product.link}
+    </Button>
+    <button class="button details-button" {...({ commandfor: dialogId, command: 'show-modal' } as any)} type="button" aria-label={t('products.moreAbout', { name: product.name })}>
+      {t('products.learnMore')} <span aria-hidden="true">+</span>
+    </button>
+  </div>
+</article>
+
+<style>
+  .product-card { padding-block: 1.75rem; border-top: 1px solid var(--line); min-width: 0; }
+  .product-heading { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+  h3 { font-size: calc(1.3125rem * var(--text-scale)); line-height: 1.45; letter-spacing: -.05em; font-weight: var(--heading-weight); flex: 1 1 auto; }
+  .category-tag { font-size: var(--text-caption); color: var(--muted); }
+  .product-description { font-size: var(--text-body); line-height: 1.7; color: var(--muted); margin-top: 1rem; max-width: 60ch; }
+  .product-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1.25rem; }
+  .details-button { border-color: transparent; color: var(--muted); }
+  .details-button span { font-size: 1.125rem; line-height: 1; }
+</style>

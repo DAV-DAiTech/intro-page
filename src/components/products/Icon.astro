@@ -1,0 +1,24 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { Product } from '../../data/products';
+import Icon, { type IconName } from '../Icon.astro';
+
+interface Props extends HTMLAttributes<'span'> {
+  name: IconName;
+  variant: Product['preview'];
+  size?: number;
+  large?: boolean;
+}
+
+const { name, variant, size = 21, large = false, class: className, ...attributes } = Astro.props;
+---
+<span {...attributes} class:list={['product-icon', `${variant}-icon`, { large }, className]}>
+  <Icon name={name} size={size} />
+</span>
+
+<style>
+  .product-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 40% 55% 42% 50%; flex-shrink: 0; }
+  .match-icon { color: var(--match-ink); background: var(--match-surface); }
+  .chat-icon { color: var(--chat-ink); background: var(--chat-surface); }
+  .product-icon.large { width: 3.125rem; height: 3.125rem; margin-bottom: 1.375rem; }
+</style>

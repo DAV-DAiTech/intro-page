@@ -47,9 +47,13 @@ h1, h2, h3 { font-family: var(--font-heading); text-wrap: balance; overflow-wrap
 p { overflow-wrap: anywhere; }
 svg { flex-shrink: 0; vertical-align: middle; }
 :is(a, button, input, select, [tabindex]):focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; box-shadow: 0 0 0 4px var(--focus-halo); }
+dialog { max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--control-border); border-radius: 1.25rem; background: var(--surface); color: var(--text); padding: 3.5rem 2rem 2rem; }
+dialog:modal { overscroll-behavior: contain; }
+dialog::backdrop { background: light-dark(#1d0e25aa, #291b22cc); backdrop-filter: blur(5px); overflow: hidden; overscroll-behavior: contain; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: .75rem; min-width: 44px; min-height: 44px; max-width: 100%; padding: .625rem 1.125rem; border: 1.5px solid currentColor; border-radius: 99px; background: transparent; color: var(--text); font-size: var(--text-ui); font-weight: 650; line-height: 1.25; }
 .button:hover { text-decoration: underline; text-underline-offset: .2em; }
 .button-canvas { color: var(--canvas-text); }
+.dialog-close { position: absolute; top: .75rem; right: .75rem; display: grid; place-items: center; min-width: 44px; min-height: 44px; padding: .625rem; border: 1.5px solid var(--control-border); border-radius: 50%; background: var(--surface); }
 button:disabled { cursor: default; }
 [hidden]:not([hidden='until-found']) { display: none !important; }
 @media (scripting: none) {

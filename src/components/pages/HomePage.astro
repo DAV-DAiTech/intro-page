@@ -1,22 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../sections/Hero.astro';
+import ProductCollection from '../products/Collection.astro';
 import About from '../sections/About.astro';
 import ClubNotes from '../sections/ClubNotes.astro';
+import { getProducts } from '../../data/products';
 import { homePath, useTranslations } from '../../i18n';
 
 const t = useTranslations(Astro.currentLocale);
 
+const products = getProducts(Astro.currentLocale);
 ---
 <BaseLayout preloadImage="/images/club-meeting.webp">
   <Hero />
-  <div id="products" class="products-layout content-width">
+  <div class="products-layout content-width">
+    <ProductCollection products={products} />
     <ClubNotes />
   </div>
   <About />
 </BaseLayout>
 
 <style>
-  .products-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: stretch; }
+  .products-layout { display: grid; grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr); gap: 1rem; align-items: stretch; }
   @media (max-width: 66em) { .products-layout { grid-template-columns: minmax(0, 1fr); } }
 </style>
