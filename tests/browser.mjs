@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { chromium } from '@playwright/test';
 import { checkAccessibility } from './accessibility.mjs';
+import { checkLocales } from './locales.mjs';
 
 const findBrowser = () => {
   const candidates = [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
@@ -39,7 +40,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+  await page.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.locator('h1').count(), 1);
   assert.equal(await page.locator('link[rel="preload"][as="font"][crossorigin]').count(), 2, 'Default heading and body fonts are preloaded with crossorigin');
@@ -84,7 +85,7 @@ try {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.equal(await page.locator('.hero-content').evaluate((element) => getComputedStyle(element).animationName), 'none');
 
-  const html = await (await fetch(`${baseUrl}/`)).text();
+  const html = await (await fetch(`${baseUrl}/en/`)).text();
   const collectionMarkup = html.match(/<section\b[^>]*data-product-collection[\s\S]*?<\/section>/)?.[0];
   assert(collectionMarkup, 'Production output contains the product collection');
   const duplicateMarkup = collectionMarkup
@@ -92,11 +93,11 @@ try {
     .replace('id="products"', 'id="additional-products"');
   const repeated = await browser.newPage();
   repeated.on('pageerror', (error) => errors.push(error.message));
-  await repeated.route(`${baseUrl}/`, (route) => route.fulfill({
+  await repeated.route(`${baseUrl}/en/`, (route) => route.fulfill({
     contentType: 'text/html',
     body: html.replace('</main>', `${duplicateMarkup}</main>`)
   }));
-  await repeated.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+  await repeated.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle' });
   const firstCollection = repeated.locator('#products');
   const secondCollection = repeated.locator('#additional-products');
   await secondCollection.getByRole('button', { name: 'AI assistant', exact: true }).click();
@@ -111,7 +112,8 @@ try {
     return new Set(ids).size === ids.length;
   }), 'Reused collections have unique accessible IDs');
   await repeated.close();
-  await checkAccessibility(browser, `${baseUrl}/`);
+  await checkAccessibility(browser, `${baseUrl}/en/`);
+  await checkLocales(browser, baseUrl);
   assert.deepEqual(errors, [], 'No JavaScript errors');
   console.log('Passed: product links, filters, dialogs, focus restoration, images, reduced motion, 5 responsive widths, and independent reusable collections.');
 } finally {

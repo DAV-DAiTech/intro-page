@@ -37,6 +37,7 @@
 }
 :root[data-theme='light'] { color-scheme: light; }
 :root[data-theme='dark'] { color-scheme: dark; }
+:root:lang(vi) { --font-heading: 'Lexend Variable', 'Inter Variable', system-ui, sans-serif; --heading-weight: 700; }
 :root[data-font='system'] { --font-body: system-ui, sans-serif; --font-heading: system-ui, sans-serif; --heading-weight: 700; }
 :root[data-font='atkinson'] { --font-body: 'Atkinson Hyperlegible', sans-serif; --font-heading: 'Atkinson Hyperlegible', sans-serif; --heading-weight: 700; }
 :root[data-font='lexend'] { --font-body: 'Lexend Variable', sans-serif; --font-heading: 'Lexend Variable', sans-serif; --heading-weight: 700; }

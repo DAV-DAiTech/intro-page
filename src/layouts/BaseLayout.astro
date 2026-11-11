@@ -10,6 +10,9 @@ import '@fontsource/atkinson-hyperlegible/700.css';
 import '@fontsource-variable/lexend';
 import bodyFontUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import headingFontUrl from '@fontsource/special-gothic-expanded-one/files/special-gothic-expanded-one-latin-400-normal.woff2?url';
+import vietnameseBodyFontUrl from '@fontsource-variable/inter/files/inter-vietnamese-wght-normal.woff2?url';
+import vietnameseHeadingFontUrl from '@fontsource-variable/lexend/files/lexend-vietnamese-wght-normal.woff2?url';
+import lexendLatinFontUrl from '@fontsource-variable/lexend/files/lexend-latin-wght-normal.woff2?url';
 import preferencesScript from '../scripts/preferences.js?raw';
 import globalCss from '../styles/global.css?raw';
 import '../styles/global.css';
@@ -28,7 +31,10 @@ const {
   socialDescription = t('meta.socialDescription'),
   image = '/images/club-artwork.webp', preloadImage, noindex = false, schema
 } = Astro.props;
-const preloadFonts = [headingFontUrl, bodyFontUrl];
+const isVietnamese = getLocale(Astro.currentLocale) === 'vi';
+const preloadFonts = isVietnamese
+  ? [lexendLatinFontUrl, vietnameseHeadingFontUrl, bodyFontUrl, vietnameseBodyFontUrl]
+  : [headingFontUrl, bodyFontUrl];
 const [, lightTheme = '#98472e', darkTheme = '#291b22'] = globalCss.match(/--canvas:\s*light-dark\((#[0-9a-fA-F]+),\s*(#[0-9a-fA-F]+)\)/) ?? [];
 ---
 <!doctype html>
