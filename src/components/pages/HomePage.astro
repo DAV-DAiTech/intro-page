@@ -10,8 +10,23 @@ import { homePath, useTranslations } from '../../i18n';
 const t = useTranslations(Astro.currentLocale);
 
 const products = getProducts(Astro.currentLocale);
+const siteUrl = new URL(homePath(Astro.currentLocale), Astro.site).toString();
+const orgId = `${siteUrl}#organization`;
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'Organization', '@id': orgId, name: t('site.name'), description: t('site.orgDescription'), url: siteUrl, logo: new URL('/images/logo.png', Astro.site).toString() },
+    {
+      '@type': 'ItemList', name: t('products.listName'), numberOfItems: products.length,
+      itemListElement: products.map((p, i) => ({
+        '@type': 'ListItem', position: i + 1,
+        item: { '@type': 'SoftwareApplication', name: p.name, applicationCategory: 'WebApplication', operatingSystem: 'All', description: p.description, url: p.url, provider: { '@id': orgId } }
+      }))
+    }
+  ]
+};
 ---
-<BaseLayout preloadImage="/images/club-meeting.webp">
+<BaseLayout preloadImage="/images/club-meeting.webp" schema={schema}>
   <Hero />
   <div class="products-layout content-width">
     <ProductCollection products={products} />

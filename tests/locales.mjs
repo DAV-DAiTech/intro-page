@@ -39,6 +39,14 @@ export async function checkLocales(browser, baseUrl) {
     await page.keyboard.press('Escape');
     assert.equal(await page.title(), vi['meta.title']);
     assert.equal(await page.locator('meta[name="description"]').getAttribute('content'), vi['meta.description']);
+    assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://dav-daitech.github.io/');
+    assert.equal(await page.locator('meta[property="og:locale"]').getAttribute('content'), 'vi_VN');
+    for (const [locale, path] of [['en', '/en/'], ['vi', '/'], ['x-default', '/']]) {
+      assert.equal(await page.locator(`link[rel="alternate"][hreflang="${locale}"]`).getAttribute('href'), `https://dav-daitech.github.io${path}`);
+    }
+    const schema = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    assert.equal(schema['@graph'][1].name, vi['products.listName']);
+    assert.equal(schema['@graph'][1].itemListElement[0].item.description, vi['products.match.description']);
     await page.evaluate(() => document.fonts.ready);
     assert.match(await page.locator('h1').evaluate((element) => getComputedStyle(element).fontFamily), /Lexend/, 'Vietnamese headings use a font with Vietnamese coverage');
     for (const font of await page.locator('link[rel="preload"][as="font"]').evaluateAll((links) => links.map((link) => link.href))) {
@@ -80,6 +88,16 @@ export async function checkLocales(browser, baseUrl) {
     await page.waitForURL(`${baseUrl}/en/`);
     assert.equal(await page.locator('html').getAttribute('lang'), 'en');
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+    await page.goto(`${baseUrl}/404.html`, { waitUntil: 'networkidle' });
+    assert.equal(await page.locator('html').getAttribute('lang'), 'vi');
+    assert(await page.getByRole('heading', { level: 1, name: vi['notFound.title'] }).isVisible());
+    assert.equal(await page.getByRole('link', { name: vi['notFound.cta'], exact: true }).getAttribute('href'), '/');
+    assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'), 'noindex');
+    const sitemap = await (await fetch(`${baseUrl}/sitemap.xml`)).text();
+    assert.match(sitemap, /<loc>https:\/\/dav-daitech.github.io\/en\/<\/loc>/);
+    const llms = await (await fetch(`${baseUrl}/llms.txt`)).text();
+    assert(llms.includes(vi['llms.description']));
+    assert(llms.includes(vi['products.chat.detail']));
     assert.deepEqual(errors, [], 'No locale JavaScript errors');
   } finally {
     await context.close();

@@ -43,7 +43,12 @@ try {
   await page.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.locator('h1').count(), 1);
+  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://dav-daitech.github.io/en/');
   assert.equal(await page.locator('link[rel="preload"][as="font"][crossorigin]').count(), 2, 'Default heading and body fonts are preloaded with crossorigin');
+  assert.equal(await page.locator('script[type="application/ld+json"]').count(), 1, 'Structured data JSON-LD is emitted');
+  assert.equal((await fetch(`${baseUrl}/robots.txt`)).status, 200);
+  assert.equal((await fetch(`${baseUrl}/sitemap.xml`)).status, 200);
+  assert.match(await (await fetch(`${baseUrl}/llms.txt`)).text(), /DAV Club Match/);
   assert.equal(await page.locator('.product-card:visible').count(), 2);
   assert.equal(await page.locator('.product-actions > a').nth(0).getAttribute('href'), 'https://dav-club-match.vercel.app/');
   assert.equal(await page.locator('.product-actions > a').nth(1).getAttribute('href'), 'https://dav-daitech.github.io/dav-assistant/');

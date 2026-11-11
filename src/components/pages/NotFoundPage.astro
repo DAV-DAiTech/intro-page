@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../ui/Button.astro';
+import { homePath, useTranslations } from '../../i18n';
+
+const t = useTranslations(Astro.currentLocale);
+---
+<BaseLayout title={t('notFound.metaTitle')} description={t('notFound.metaDescription')} noindex>
+  <section class="not-found content-width" aria-labelledby="not-found-title">
+    <p class="code" aria-hidden="true">{t('notFound.code')}</p>
+    <h1 id="not-found-title">{t('notFound.title')}</h1>
+    <p class="body">{t('notFound.description')}</p>
+    <Button variant="canvas" href={homePath(Astro.currentLocale)}>{t('notFound.cta')}</Button>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(4rem, 8vw, 6.5rem); display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+  .code { font-family: var(--font-heading); font-size: calc(clamp(5rem, 18vw, 11rem) * var(--text-scale)); font-weight: var(--heading-weight); line-height: .9; letter-spacing: -.06em; }
+  h1 { font-size: calc(clamp(2rem, 4vw, 3.25rem) * var(--text-scale)); font-weight: var(--heading-weight); line-height: 1.15; letter-spacing: -.055em; }
+  .body { color: var(--canvas-muted); max-width: 45ch; }
+</style>
