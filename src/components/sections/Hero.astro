@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import { launchImage } from '../../data/images';
 import { getLocale, useTranslations } from '../../i18n';
+import { clubImage } from '../../lib/club-images';
 
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -10,7 +12,8 @@ const t = useTranslations(locale);
   <div class="hero-content">
     <h1 id="hero-title">{t('hero.titleLine1')}<br />{t('hero.titleLine2')}</h1>
     <div class="hero-photo">
-      <img class="meeting-photo" {...launchImage.image} alt={launchImage.copy[locale].alt} sizes="(min-width: 85rem) 1216px, 90vw" fetchpriority="high" />
+      <Image class="meeting-photo" src={clubImage(launchImage.file)} alt={launchImage.copy[locale].alt}
+        width={768} widths={[768, 1600]} sizes="(min-width: 85rem) 1216px, 90vw" format="webp" fetchpriority="high" />
       <span class="club-seal" aria-hidden="true"><img src="/images/logo.png" alt="" width="112" height="112" /></span>
     </div>
   </div>

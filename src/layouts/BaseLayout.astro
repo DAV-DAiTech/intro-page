@@ -2,6 +2,7 @@
 import SiteHeader from '../components/layout/SiteHeader.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
 import { artworkImage } from '../data/images';
+import { clubImage } from '../lib/club-images';
 import { defaultLocale, getLocale, locales, pagePath, useTranslations } from '../i18n';
 
 import '@fontsource-variable/inter';
@@ -31,7 +32,7 @@ const {
   description = t('meta.description'),
   socialTitle = t('meta.socialTitle'),
   socialDescription = t('meta.socialDescription'),
-  image = artworkImage.image.src, noindex = false, schema, pageSlug
+  image = clubImage(artworkImage.file).src, noindex = false, schema, pageSlug
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const isVietnamese = locale === 'vi';

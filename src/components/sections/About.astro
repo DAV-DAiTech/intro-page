@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from '../Icon.astro';
 import { artworkImage } from '../../data/images';
 import { getLocale, useTranslations } from '../../i18n';
+import { clubImage } from '../../lib/club-images';
 
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -12,7 +14,8 @@ const t = useTranslations(locale);
     <p>{t('about.description')}</p>
     <a class="text-link" href="#products">{t('about.cta')} <Icon name="arrow" size={19} /></a>
   </div>
-  <img class="about-art" {...artworkImage.image} alt={artworkImage.copy[locale].alt} loading="lazy" />
+  <Image class="about-art" src={clubImage(artworkImage.file)} alt={artworkImage.copy[locale].alt} loading="lazy"
+    width={768} widths={[768, 1152]} sizes="(min-width: 85em) 670px, (min-width: 52em) 50vw, 90vw" format="webp" />
 </section>
 
 <style>

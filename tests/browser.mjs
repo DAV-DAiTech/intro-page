@@ -43,7 +43,10 @@ try {
   assert.equal(await page.getByRole('link', { name: /Open the kiosk with DAV AI Receptionist/ }).getAttribute('href'), 'https://dav-daitech.github.io/avatar-kiosk/');
   assert.deepEqual(await page.locator('.button:visible').evaluateAll((buttons) => [...new Set(buttons.map((b) => Math.round(b.getBoundingClientRect().height)))]), [44], 'All buttons share a uniform 44px height');
   assert(await page.locator('img').evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0)), 'All images load');
-  assert.match(await page.locator('.meeting-photo').evaluate((image) => image.currentSrc), /\/images\/club\/orientationday-1600\.webp$/);
+  assert(await page.locator('.meeting-photo').evaluate((image) => image.srcset.split(',').some((candidate) => {
+    const [url, width] = candidate.trim().split(/\s+/);
+    return width === '1600w' && new URL(url, document.baseURI).href === image.currentSrc;
+  })), 'Desktop hero selects the generated 1600px image');
   await mkdir('test-results', { recursive: true });
   await page.screenshot({ path: 'test-results/desktop.png', fullPage: true });
   await page.getByRole('button', { name: 'Student life', exact: true }).click();

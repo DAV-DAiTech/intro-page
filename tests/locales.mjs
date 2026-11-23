@@ -201,12 +201,20 @@ export async function checkLocales(browser, baseUrl) {
             await page.waitForFunction((element) => element.complete && element.naturalWidth > 0, await image.elementHandle());
           }
           const links = await page.locator('main figcaption a').evaluateAll((elements) => elements.map((link) => link.href));
-          assert.deepEqual(links, copy.map(({ href, image }) => new URL(href ?? image.src, baseUrl).href));
+          assert.equal(links.length, copy.length);
+          for (const [index, url] of links.entries()) {
+            assert(new URL(url).pathname.startsWith(`/_astro/${copy[index].file.replace(/\.webp$/, '.')}`));
+          }
           assert.deepEqual(await page.locator('main figcaption').allTextContents(), copy.map(({ caption }) => caption));
           assert.deepEqual(await images.evaluateAll((elements) => elements.map((image) => image.alt)), copy.map(({ alt }) => alt));
-          const launch = page.getByRole('img', { name: launchImage.copy[locale].alt, exact: true });
-          assert.equal((await fetch(new URL(launchImage.href, baseUrl), { method: 'HEAD' })).status, 200);
-          assert.match(await launch.evaluate((image) => image.currentSrc), /\/images\/club\/orientationday-768\.webp$/);
+          const previews = await images.evaluateAll((elements) => elements.map((image) => {
+            const [url, width] = image.srcset.split(',')[0].trim().split(/\s+/);
+            return { url: image.currentSrc, small: width === '768w' && new URL(url, document.baseURI).href === image.currentSrc };
+          }));
+          assert(previews.every(({ url, small }, index) => small && url !== links[index]),
+            'Desktop gallery loads the generated previews and links to the full images');
+          const originals = await Promise.all(links.map((url) => fetch(url, { method: 'HEAD' })));
+          assert(originals.every(({ ok }) => ok), 'Full-size gallery links resolve');
           for (const [width, columns] of [[1440, 3], [960, 2], [390, 1]]) {
             await page.setViewportSize({ width, height: 1000 });
             const boxes = await images.evaluateAll((elements) => elements.map((image) => image.getBoundingClientRect().toJSON()));
@@ -219,7 +227,7 @@ export async function checkLocales(browser, baseUrl) {
         }
         if (slug === 'members') {
           const photo = page.getByRole('main').getByRole('img', { name: launchImage.copy[locale].alt, exact: true });
-          assert.equal(await photo.getAttribute('src'), launchImage.image.src);
+          assert.match(await photo.getAttribute('srcset'), /768w, .*1152w/);
           if (members.length) {
             assert.deepEqual(await page.locator('main h2').allTextContents(), members.map(({ name }) => name));
           } else {

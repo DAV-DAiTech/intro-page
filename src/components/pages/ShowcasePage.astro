@@ -1,18 +1,23 @@
 ---
+import { Image } from 'astro:assets';
 import DefaultPage from '../../layouts/DefaultPage.astro';
 import { getShowcaseImages, launchImage } from '../../data/images';
+import { clubImage } from '../../lib/club-images';
 
-const images = getShowcaseImages(Astro.currentLocale);
+const images = getShowcaseImages(Astro.currentLocale).map(({ file, ...copy }) => ({
+  ...copy,
+  image: clubImage(file)
+}));
 const imageSizes = '(min-width: 85em) 358px, (min-width: 68em) 30vw, (min-width: 52em) 44vw, 90vw';
 ---
-<DefaultPage slug="showcase" image={launchImage.href}>
+<DefaultPage slug="showcase" image={clubImage(launchImage.file).src}>
   <ul class="gallery" role="list">
-    {images.map(({ caption, href, image, alt }, index) => (
+    {images.map(({ caption, image, alt }, index) => (
       <li>
         <figure>
-          <img {...image} alt={alt} sizes={image.srcset ? imageSizes : undefined}
+          <Image src={image} alt={alt} width={768} widths={[768, 1152]} sizes={imageSizes} format="webp"
             loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : undefined} decoding="async" />
-          <figcaption><a href={href ?? image.src}>{caption}</a></figcaption>
+          <figcaption><a href={image.src}>{caption}</a></figcaption>
         </figure>
       </li>
     ))}

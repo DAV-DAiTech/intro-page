@@ -1,13 +1,16 @@
 ---
+import { Image } from 'astro:assets';
 import DefaultPage from '../../layouts/DefaultPage.astro';
 import { launchImage } from '../../data/images';
 import { members } from '../../data/members';
 import { getLocale, useTranslations } from '../../i18n';
+import { clubImage } from '../../lib/club-images';
 
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
+const photo = clubImage(launchImage.file);
 ---
-<DefaultPage slug="members" image={launchImage.href}>
+<DefaultPage slug="members" image={photo.src}>
   <div class="roster">
     {members.length ? (
       <ul class="people" role="list">
@@ -21,7 +24,7 @@ const t = useTranslations(locale);
     ) : (
       <p>{t('members.empty')}</p>
     )}
-    <img {...launchImage.image} alt={launchImage.copy[locale].alt}
+    <Image src={photo} alt={launchImage.copy[locale].alt} width={768} widths={[768, 1152]} format="webp"
       sizes="(min-width: 85em) 580px, (min-width: 52em) 45vw, 90vw" decoding="async" />
   </div>
 </DefaultPage>

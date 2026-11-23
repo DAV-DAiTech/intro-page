@@ -1,19 +1,12 @@
 import { getLocale, type Locale } from '../i18n.ts';
 
 interface ShowcaseImage {
-  image: { src: string; srcset?: string; width: number; height: number };
-  href?: string;
+  file: string;
   copy: Record<Locale, { caption: string; alt: string }>;
 }
 
 export const launchImage = {
-  image: {
-    src: '/images/club/orientationday-768.webp',
-    srcset: '/images/club/orientationday-768.webp 768w, /images/club/orientationday-1600.webp 1600w',
-    width: 768,
-    height: 512
-  },
-  href: '/images/club/orientationday.webp',
+  file: 'orientationday.webp',
   copy: {
     en: {
       caption: 'DAiTech launch',
@@ -26,8 +19,8 @@ export const launchImage = {
   }
 } satisfies ShowcaseImage;
 
-export const meetingImage = {
-  image: { src: '/images/club/meeting.webp', width: 1554, height: 1077 },
+const meetingImage = {
+  file: 'meeting.webp',
   copy: {
     en: {
       caption: 'First club meeting',
@@ -41,7 +34,7 @@ export const meetingImage = {
 } satisfies ShowcaseImage;
 
 export const artworkImage = {
-  image: { src: '/images/club/artwork.webp', width: 1400, height: 788 },
+  file: 'artwork.webp',
   copy: {
     en: {
       caption: 'DAiTech club artwork',
@@ -56,7 +49,7 @@ export const artworkImage = {
 
 const showcaseImages: readonly ShowcaseImage[] = [
   {
-    image: { src: '/images/club/receptionist-launch.webp', width: 1440, height: 960 },
+    file: 'receptionist-launch.webp',
     copy: {
       en: {
         caption: 'Launch of DAV AI Receptionist, an AI-powered virtual receptionist',
@@ -70,7 +63,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
   },
   launchImage,
   {
-    image: { src: '/images/club/launch-speakers.webp', width: 1440, height: 960 },
+    file: 'launch-speakers.webp',
     copy: {
       en: {
         caption: 'Dr. Nguyễn Hùng Sơn and Hoàng Mai Hương speak at the DAiTech launch ceremony',
@@ -83,7 +76,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
     }
   },
   {
-    image: { src: '/images/club/club-fest-2026.webp', width: 1440, height: 1080 },
+    file: 'club-fest-2026.webp',
     copy: {
       en: {
         caption: 'DAiTech’s booth at DAV Club Fest 2026',
@@ -96,7 +89,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
     }
   },
   {
-    image: { src: '/images/club/research-lab-year-0.webp', width: 1440, height: 960 },
+    file: 'research-lab-year-0.webp',
     copy: {
       en: {
         caption: 'Research Lab, Technical Council (DAiTech year 0)',
@@ -109,7 +102,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
     }
   },
   {
-    image: { src: '/images/club/applied-lab-year-0.webp', width: 1440, height: 960 },
+    file: 'applied-lab-year-0.webp',
     copy: {
       en: {
         caption: 'Applied Lab, Technical Council (DAiTech year 0)',
@@ -122,7 +115,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
     }
   },
   {
-    image: { src: '/images/club/events-team-year-0.webp', width: 1440, height: 960 },
+    file: 'events-team-year-0.webp',
     copy: {
       en: {
         caption: 'Events Team (DAiTech year 0)',
@@ -135,7 +128,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
     }
   },
   {
-    image: { src: '/images/club/communications-team-year-0.webp', width: 1330, height: 714 },
+    file: 'communications-team-year-0.webp',
     copy: {
       en: {
         caption: 'Communications Team (DAiTech year 0)',
@@ -148,7 +141,7 @@ const showcaseImages: readonly ShowcaseImage[] = [
     }
   },
   {
-    image: { src: '/images/club/administration-hr-year-0.webp', width: 1440, height: 960 },
+    file: 'administration-hr-year-0.webp',
     copy: {
       en: {
         caption: 'Administration and Human Resources Team (DAiTech year 0)',
@@ -166,5 +159,5 @@ const showcaseImages: readonly ShowcaseImage[] = [
 
 export function getShowcaseImages(locale?: string) {
   const language = getLocale(locale);
-  return showcaseImages.map(({ copy, ...entry }) => ({ ...entry, ...copy[language] }));
+  return showcaseImages.map(({ file, copy }) => ({ file, ...copy[language] }));
 }

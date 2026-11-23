@@ -143,6 +143,8 @@ Projects, Image showcase, Member list and Contact share [`DefaultPage.astro`](./
 
 The Projects page lists the products and the DAiTech website. Edit the showcase entries in [`images.ts`](./src/data/images.ts) and add roster entries to [`members.ts`](./src/data/members.ts). Each roster entry needs a name and can include a role in both languages.
 
+Keep one WebP source per showcase entry in `src/assets/club/`. Astro generates responsive previews at build time, and gallery captions link to the full-size sources.
+
 The Contact page and footer share the links in [`contact.ts`](./src/data/contact.ts).
 
 ### Languages
@@ -183,4 +185,4 @@ The GitHub and Facebook icons come from [Simple Icons](https://simpleicons.org/)
 
 Bundled typefaces (Inter, Special Gothic Expanded One, Atkinson Hyperlegible and Lexend) are self-hosted under the SIL Open Font License, their license texts are located in [`public/licenses/`](./public/licenses).
 
-Club photography, artwork and branding in [`public/images/`](./public/images) belong to DAiTech. The MIT license covers the source code. Contact DAiTech for permission to reuse those assets.
+Club photography, artwork and branding in [`src/assets/club/`](./src/assets/club) and [`public/images/`](./public/images) belong to DAiTech. The MIT license covers the source code. Contact DAiTech for permission to reuse those assets.
