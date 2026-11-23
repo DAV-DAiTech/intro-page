@@ -101,7 +101,7 @@ export async function checkAccessibility(browser, baseUrl) {
   const noScript = await browser.newContext({ javaScriptEnabled: false });
   const staticPage = await noScript.newPage();
   await staticPage.goto(baseUrl);
-  assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 2);
+  assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 3);
   assert.equal(await staticPage.locator('.filters:visible, .details-button:visible, .settings-trigger:visible').count(), 0, 'Only usable controls are shown without JavaScript');
   await noScript.close();
   const blockedStorage = await context.newPage();

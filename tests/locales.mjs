@@ -59,7 +59,7 @@ export async function checkLocales(browser, baseUrl) {
     assert(await page.locator('.match-card').isVisible());
     assert.equal(await page.getByRole('status').textContent(), 'Đang hiển thị 1 sản phẩm thuộc danh mục Đời sống sinh viên');
     await page.getByRole('button', { name: 'Trợ lý AI', exact: true }).click();
-    assert(await page.locator('.chat-card').isVisible());
+    assert(await page.getByRole('heading', { name: 'DAV Chatbot', exact: true }).isVisible());
     await page.getByRole('button', { name: 'Tìm hiểu thêm về DAV Chatbot', exact: true }).click();
     assert(await page.getByRole('dialog').getByText(vi['products.chat.detail'], { exact: true }).isVisible());
     await audit('Vietnamese product dialog');
@@ -109,7 +109,7 @@ export async function checkLocales(browser, baseUrl) {
     await staticPage.goto(`${baseUrl}/en/`);
     await staticPage.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
     assert.equal(await staticPage.locator('html').getAttribute('lang'), 'vi', 'Language switching works without JavaScript');
-    assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 2);
+    assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 3);
   } finally {
     await noScript.close();
   }

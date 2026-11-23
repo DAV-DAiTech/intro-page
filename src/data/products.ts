@@ -32,6 +32,14 @@ export const getProducts = (locale?: string): readonly Product[] => {
       url: 'https://dav-daitech.github.io/dav-assistant/',
       detail: t('products.chat.detail'),
       link: t('products.chat.link')
+    },
+    {
+      id: 'receptionist', preview: 'chat', name: t('products.receptionist.name'), category: t('products.receptionist.category'), icon: 'sparkle',
+      summary: t('products.receptionist.summary'),
+      description: t('products.receptionist.description'),
+      url: 'https://dav-daitech.github.io/avatar-kiosk/',
+      detail: t('products.receptionist.detail'),
+      link: t('products.receptionist.link')
     }
   ];
 };

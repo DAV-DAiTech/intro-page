@@ -49,9 +49,10 @@ try {
   assert.equal((await fetch(`${baseUrl}/robots.txt`)).status, 200);
   assert.equal((await fetch(`${baseUrl}/sitemap.xml`)).status, 200);
   assert.match(await (await fetch(`${baseUrl}/llms.txt`)).text(), /DAV Club Match/);
-  assert.equal(await page.locator('.product-card:visible').count(), 2);
+  assert.equal(await page.locator('.product-card:visible').count(), 3);
   assert.equal(await page.locator('.product-actions > a').nth(0).getAttribute('href'), 'https://dav-club-match.vercel.app/');
   assert.equal(await page.locator('.product-actions > a').nth(1).getAttribute('href'), 'https://dav-daitech.github.io/dav-assistant/');
+  assert.equal(await page.getByRole('link', { name: /Open the kiosk with DAV AI Receptionist/ }).getAttribute('href'), 'https://dav-daitech.github.io/avatar-kiosk/');
   assert.deepEqual(await page.locator('.button:visible').evaluateAll((buttons) => [...new Set(buttons.map((b) => Math.round(b.getBoundingClientRect().height)))]), [44], 'All buttons share a uniform 44px height');
   assert(await page.locator('img').evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0)), 'All images load');
   await mkdir('test-results', { recursive: true });
@@ -62,10 +63,10 @@ try {
   assert.equal(await page.getByRole('button', { name: 'Student life', exact: true }).getAttribute('aria-pressed'), 'true');
   await page.getByRole('button', { name: 'AI assistant', exact: true }).click();
   assert.equal(await page.locator('.product-card:visible').count(), 1);
-  assert(await page.locator('.chat-card').isVisible());
+  assert(await page.getByRole('heading', { name: 'DAV Chatbot', exact: true }).isVisible());
   assert.match(await page.getByRole('status').innerText(), /Showing 1 product in AI assistant/);
   await page.getByRole('button', { name: /All products/ }).click();
-  for (const product of ['DAV Club Match', 'DAV Chatbot']) {
+  for (const product of ['DAV Club Match', 'DAV Chatbot', 'DAV AI Receptionist']) {
     const trigger = page.getByRole('button', { name: `More about ${product}`, exact: true });
     await trigger.click();
     assert(await page.getByRole('dialog').isVisible());
@@ -106,7 +107,7 @@ try {
   const firstCollection = repeated.locator('#products');
   const secondCollection = repeated.locator('#additional-products');
   await secondCollection.getByRole('button', { name: 'AI assistant', exact: true }).click();
-  assert.equal(await firstCollection.locator('.product-card:visible').count(), 2, 'Filtering one collection leaves the other unchanged');
+  assert.equal(await firstCollection.locator('.product-card:visible').count(), 3, 'Filtering one collection leaves the other unchanged');
   assert.equal(await secondCollection.locator('.product-card:visible').count(), 1);
   await secondCollection.getByRole('button', { name: 'More about DAV Chatbot' }).click();
   assert(await secondCollection.getByRole('dialog').isVisible(), 'Repeated cards open their own dialog');
