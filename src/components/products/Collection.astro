@@ -6,25 +6,27 @@ import { useTranslations } from '../../i18n';
 
 const t = useTranslations(Astro.currentLocale);
 
-interface Props { products: readonly Product[]; id?: string; }
-const { products, id = 'products' } = Astro.props;
+interface Props { products: readonly Product[]; id?: string; showIntro?: boolean; }
+const { products, id = 'products', showIntro = true } = Astro.props;
 const categories = [...new Set(products.map((product) => product.category))];
 const count = products.length;
 const dialogId = (product: Product) => `${id}-details-${product.id}`;
 ---
-<section class="products-section" id={id} aria-labelledby={`${id}-title`} data-product-collection>
-  <div class="section-intro">
-    <h2 id={`${id}-title`}>{t('products.titleLine1')}<br />{t('products.titleLine2')}</h2>
-    <p>{t('products.introLine1')}<br />{t('products.introLine2')}</p>
-  </div>
-  <div class="collection-toolbar">
-    <div class="filters" role="group" aria-label={t('products.filterLabel')}>
-      <button class="button filter active" type="button" data-filter="all" aria-pressed="true">{t('products.all')} <span>{count}</span></button>
-      {categories.map((category) => <button class="button filter" type="button" data-filter={category} aria-pressed="false">{category}</button>)}
+<section class:list={['products-section', { standalone: !showIntro }]} id={id}
+  aria-labelledby={showIntro ? `${id}-title` : undefined}
+  aria-label={showIntro ? undefined : t('products.listName')} data-product-collection>
+  {showIntro && (
+    <div class="section-intro">
+      <h2 id={`${id}-title`}>{t('products.titleLine1')}<br />{t('products.titleLine2')}</h2>
+      <p>{t('products.introLine1')}<br />{t('products.introLine2')}</p>
     </div>
+  )}
+  <div class="filters" role="group" aria-label={t('products.filterLabel')}>
+    <button class="button filter" type="button" data-filter="" aria-pressed="true">{t('products.all')} <span>{count}</span></button>
+    {categories.map((category) => <button class="button filter" type="button" data-filter={category} aria-pressed="false">{category}</button>)}
   </div>
   <p class="sr-only" id={`${id}-filter-result`} data-filter-result data-one={t('products.statusOne')} data-many={t('products.statusMany')} data-in-one={t('products.statusInOne')} data-in-many={t('products.statusInMany')} role="status" aria-live="polite">{t(count === 1 ? 'products.statusAllOne' : 'products.statusAllMany', { count })}</p>
-  <div class="product-grid">{products.map((product) => <ProductCard product={product} dialogId={dialogId(product)} />)}</div>
+  <div class="product-grid">{products.map((product) => <ProductCard product={product} dialogId={dialogId(product)} heading={showIntro ? 'h3' : 'h2'} />)}</div>
   {products.map((product) => <ProductDialog product={product} id={dialogId(product)} />)}
 </section>
 
@@ -40,17 +42,15 @@ const dialogId = (product: Product) => `${id}-details-${product.id}`;
       if (!filter) return;
       const selected = filter.dataset.filter;
       filters.forEach((item) => {
-        const active = item === filter;
-        item.classList.toggle('active', active);
-        item.setAttribute('aria-pressed', String(active));
+        item.setAttribute('aria-pressed', String(item === filter));
       });
       let visible = 0;
       cards.forEach((card) => {
-        card.hidden = selected !== 'all' && card.dataset.category !== selected;
+        card.hidden = Boolean(selected && card.dataset.category !== selected);
         if (!card.hidden) visible++;
       });
       if (result) {
-        const key = selected === 'all' ? (visible === 1 ? 'one' : 'many') : (visible === 1 ? 'inOne' : 'inMany');
+        const key = selected ? (visible === 1 ? 'inOne' : 'inMany') : (visible === 1 ? 'one' : 'many');
         result.textContent = (result.dataset[key] || '').replace('{count}', String(visible)).replace('{category}', selected || '');
       }
     });
@@ -62,12 +62,16 @@ const dialogId = (product: Product) => `${id}-details-${product.id}`;
   .section-intro { border-top: 4px solid currentColor; padding-top: 1.75rem; }
   h2 { font-size: calc(clamp(2rem, 1.3rem + 2vw, 3.375rem) * var(--text-scale)); line-height: 1.15; letter-spacing: -.065em; font-weight: var(--heading-weight); }
   .section-intro > p { font-size: var(--text-body); line-height: 1.65; color: var(--muted); max-width: 45ch; margin-top: 1.25rem; }
-  .collection-toolbar { padding-block: 1.75rem 1rem; }
-  .filters { display: flex; align-items: center; gap: .625rem; flex-wrap: wrap; }
+  .filters { display: flex; align-items: center; gap: .625rem; flex-wrap: wrap; padding-block: 1.75rem 1rem; }
   .filter { border-color: var(--control-border); color: var(--muted); font-weight: 400; }
   .filter:hover { background: var(--hover-surface); text-decoration: none; }
-  .filter.active { background: var(--plum); border-color: var(--plum); color: var(--on-plum); font-weight: 650; }
+  .filter[aria-pressed='true'] { background: var(--plum); border-color: var(--plum); color: var(--on-plum); font-weight: 650; }
   .filter span { font-size: var(--text-caption); line-height: 1; }
   .product-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .standalone .filters { padding-block-start: 0; }
+  .standalone .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    column-gap: clamp(1rem, 3vw, 2rem);
+  }
   @media (max-width: 44em) { .products-section { border-radius: 2rem .375rem; } }
 </style>

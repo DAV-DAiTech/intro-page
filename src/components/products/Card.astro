@@ -9,14 +9,15 @@ const t = useTranslations(Astro.currentLocale);
 interface Props {
   product: Product;
   dialogId: string;
+  heading?: 'h2' | 'h3';
 }
 
-const { product, dialogId } = Astro.props;
+const { product, dialogId, heading: Heading = 'h3' } = Astro.props;
 ---
 <article class={`product-card ${product.preview}-card`} data-category={product.category}>
   <div class="product-heading">
     <ProductIcon name={product.icon} variant={product.preview} />
-    <h3>{product.name}</h3>
+    <Heading>{product.name}</Heading>
     <span class="category-tag">{product.category}</span>
   </div>
   <p class="product-description">{product.description}</p>
@@ -33,7 +34,7 @@ const { product, dialogId } = Astro.props;
 <style>
   .product-card { padding-block: 1.75rem; border-top: 1px solid var(--line); min-width: 0; }
   .product-heading { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
-  h3 { font-size: calc(1.3125rem * var(--text-scale)); line-height: 1.45; letter-spacing: -.05em; font-weight: var(--heading-weight); flex: 1 1 auto; }
+  :is(h2, h3) { font-size: calc(1.3125rem * var(--text-scale)); line-height: 1.45; letter-spacing: -.05em; font-weight: var(--heading-weight); flex: 1 1 auto; }
   .category-tag { font-size: var(--text-caption); color: var(--muted); }
   .product-description { font-size: var(--text-body); line-height: 1.7; color: var(--muted); margin-top: 1rem; max-width: 60ch; }
   .product-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1.25rem; }

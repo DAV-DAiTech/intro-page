@@ -79,7 +79,7 @@ src/
 │   │   ├── AccessibilitySettings.astro # Reading preferences button and modal
 │   │   ├── SiteFooter.astro            # Footer identity and navigation
 │   │   └── SiteHeader.astro            # Top bar, navigation, and actions
-│   ├── pages/             # Shared localized homepage and error-page templates
+│   ├── pages/             # Shared localized page components
 │   ├── products/
 │   │   ├── Card.astro                  # Individual product row and modal trigger
 │   │   ├── Collection.astro            # Filterable product list and live status
@@ -93,11 +93,15 @@ src/
 │   │   └── Button.astro                # Reusable pill link button
 │   └── Icon.astro                      # Inline SVG icon set and IconName type
 ├── data/
-│   └── products.ts        # Typed product catalogue
+│   ├── products.ts        # Typed product catalogue
+│   ├── members.ts         # Public club roster
+│   └── images.ts          # Shared images and localized showcase entries
 ├── layouts/
-│   └── BaseLayout.astro   # HTML shell, SEO/OG tags, font preloads, inline init
+│   ├── BaseLayout.astro   # HTML shell, SEO/OG tags, font preloads, inline init
+│   └── DefaultPage.astro  # Localized club page heading and content slot
 ├── pages/
 │   ├── 404.astro          # Custom 404 page (noindex)
+│   ├── [...clubPage].astro # Localized projects, showcase, and members routes
 │   ├── index.astro        # Vietnamese homepage route
 │   ├── llms.txt.ts        # Machine-readable summary for AI assistants
 │   ├── robots.txt.ts      # Dynamic robots.txt with Sitemap URL
@@ -133,6 +137,12 @@ Add an entry to the `products` array in [`src/data/products.ts`](./src/data/prod
 Category filter buttons, product counts, detail dialogs and the JSON-LD ItemList in [`HomePage.astro`](./src/components/pages/HomePage.astro) all derive from this.
 
 To render multiple independent product lists on the same page or across pages, pass a unique `id` to `<ProductCollection products={myProducts} id="more-products" />`.
+
+### Club pages
+
+Projects, Image showcase, and Member list share [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). It uses the slug to look up the localized title and description and renders content through its default slot. The [club page route](./src/pages/%5B...clubPage%5D.astro) generates both languages from the page list in `src/i18n.ts`.
+
+The Projects page reads the existing product catalogue. Edit the showcase entries in [`images.ts`](./src/data/images.ts) and add roster entries to [`members.ts`](./src/data/members.ts). Each roster entry needs a name and can include a role in both languages.
 
 ### Languages
 

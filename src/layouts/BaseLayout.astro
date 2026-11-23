@@ -2,7 +2,7 @@
 import SiteHeader from '../components/layout/SiteHeader.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
 import { artworkImage } from '../data/images';
-import { defaultLocale, getLocale, homePath, locales, useTranslations } from '../i18n';
+import { defaultLocale, getLocale, locales, pagePath, useTranslations } from '../i18n';
 
 import '@fontsource-variable/inter';
 import '@fontsource/special-gothic-expanded-one/400.css';
@@ -23,7 +23,7 @@ const t = useTranslations(locale);
 
 interface Props {
   title?: string; description?: string; socialTitle?: string; socialDescription?: string;
-  image?: string; noindex?: boolean; schema?: unknown;
+  image?: string; noindex?: boolean; schema?: unknown; pageSlug?: string;
 }
 
 const {
@@ -31,7 +31,7 @@ const {
   description = t('meta.description'),
   socialTitle = t('meta.socialTitle'),
   socialDescription = t('meta.socialDescription'),
-  image = artworkImage.image.src, noindex = false, schema
+  image = artworkImage.image.src, noindex = false, schema, pageSlug
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const isVietnamese = locale === 'vi';
@@ -52,8 +52,8 @@ const [, lightTheme = '#98472e', darkTheme = '#291b22'] = globalCss.match(/--can
     <meta name="color-scheme" content="light dark" />
     <meta name="description" content={description} />
     {!noindex && <link rel="canonical" href={canonical} />}
-    {!noindex && locales.map((locale) => <link rel="alternate" hreflang={locale} href={new URL(homePath(locale), Astro.site)} />)}
-    {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(homePath(defaultLocale), Astro.site)} />}
+    {!noindex && locales.map((locale) => <link rel="alternate" hreflang={locale} href={new URL(pagePath(locale, pageSlug), Astro.site)} />)}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(pagePath(defaultLocale, pageSlug), Astro.site)} />}
     {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={isVietnamese ? 'vi_VN' : 'en_US'} />
@@ -73,7 +73,7 @@ const [, lightTheme = '#98472e', darkTheme = '#291b22'] = globalCss.match(/--can
   </head>
   <body id="top">
     <a class="skip-link" href="#main">{t('nav.skipToContent')}</a>
-    <SiteHeader />
+    <SiteHeader pageSlug={pageSlug} />
     <main id="main" tabindex="-1"><slot /></main>
     <SiteFooter />
   </body>

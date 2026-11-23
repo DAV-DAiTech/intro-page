@@ -1,0 +1,66 @@
+---
+import DefaultPage from '../../layouts/DefaultPage.astro';
+import { getShowcaseImages, launchImage } from '../../data/images';
+
+const images = getShowcaseImages(Astro.currentLocale);
+---
+<DefaultPage slug="showcase" image={launchImage.href}>
+  <ul class="gallery" role="list">
+    {images.map(({ caption, href, image, alt }, index) => (
+      <li>
+        <figure>
+          <img {...image} alt={alt} sizes={image.srcset ? '(min-width: 85rem) 1232px, 90vw' : undefined}
+            loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : undefined} decoding="async" />
+          <figcaption><a href={href ?? image.src}>{caption}</a></figcaption>
+        </figure>
+      </li>
+    ))}
+  </ul>
+</DefaultPage>
+
+<style>
+  .gallery {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1rem, 3vw, 2rem);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  figure {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    margin: 0;
+    padding: clamp(.75rem, 2vw, 1.5rem);
+    border-radius: 1.75rem .5rem;
+    background: var(--surface);
+    color: var(--text);
+  }
+  img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 1.125rem .25rem;
+  }
+  li:first-child img { object-position: center 46%; }
+  figcaption {
+    padding: .75rem .25rem .125rem;
+    font-size: var(--text-ui);
+    font-weight: 650;
+  }
+  figcaption a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
+  @media (min-width: 52em) {
+    .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    li:first-child { grid-column: 1 / -1; }
+    li:first-child img { aspect-ratio: 2 / 1; }
+  }
+</style>

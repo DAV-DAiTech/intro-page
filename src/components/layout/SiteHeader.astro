@@ -1,11 +1,14 @@
 ---
 import Button from '../ui/Button.astro';
 import AccessibilitySettings from './AccessibilitySettings.astro';
-import { getLocale, homePath, useTranslations } from '../../i18n';
+import { clubPages, getLocale, homePath, pagePath, useTranslations } from '../../i18n';
 
-const t = useTranslations(Astro.currentLocale);
-const home = homePath(Astro.currentLocale);
-const otherLocale = getLocale(Astro.currentLocale) === 'vi' ? 'en' : 'vi';
+interface Props { pageSlug?: string; }
+const { pageSlug } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const home = homePath(locale);
+const otherLocale = locale === 'vi' ? 'en' : 'vi';
 ---
 <header class="site-header content-width">
   <a class="brand" href={`${home}#top`} aria-label={t('header.homeLabel')}>
@@ -15,7 +18,10 @@ const otherLocale = getLocale(Astro.currentLocale) === 'vi' ? 'en' : 'vi';
   <nav aria-label={t('header.navLabel')}>
     <a href={`${home}#products`}>{t('header.products')}</a>
     <a href={`${home}#about`}>{t('header.story')}</a>
-    <a class="language-switch" href={homePath(otherLocale)} lang={otherLocale} hreflang={otherLocale} rel="alternate">{otherLocale === 'vi' ? 'Tiếng Việt' : 'English'}</a>
+    {clubPages.map((slug) => (
+      <a href={pagePath(locale, slug)} aria-current={pageSlug === slug ? 'page' : undefined}>{t(`pages.${slug}.title`)}</a>
+    ))}
+    <a class="language-switch" href={pagePath(otherLocale, pageSlug)} lang={otherLocale} hreflang={otherLocale} rel="alternate">{otherLocale === 'vi' ? 'Tiếng Việt' : 'English'}</a>
   </nav>
   <div class="header-actions">
     <Button class="nav-cta" variant="canvas" href={`${home}#products`} icon="diagonal">{t('header.cta')}</Button>
@@ -29,7 +35,7 @@ const otherLocale = getLocale(Astro.currentLocale) === 'vi' ? 'en' : 'vi';
   .brand img { border-radius: 50%; width: 2.25rem; height: 2.25rem; }
   nav { display: flex; flex-wrap: wrap; justify-content: end; gap: .5rem 1.5rem; font-size: var(--text-ui); }
   nav a { display: inline-flex; align-items: center; min-height: 44px; padding: .5rem 0; }
-  nav a:hover { text-decoration: underline; text-underline-offset: .3em; }
+  nav a:is(:hover, [aria-current='page']) { text-decoration: underline; text-underline-offset: .3em; }
   nav .language-switch { padding-inline: .875rem; border: 1px solid currentColor; border-radius: 99px; }
   .header-actions { display: flex; align-items: center; gap: .75rem; }
   @media (max-width: 70em) { .header-actions :global(.nav-cta) { display: none; } }

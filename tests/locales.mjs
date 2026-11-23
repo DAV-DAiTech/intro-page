@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import AxeBuilder from '@axe-core/playwright';
-import { en, vi } from '../src/i18n.ts';
+import { clubPages, en, pagePath, vi } from '../src/i18n.ts';
+import { getShowcaseImages, launchImage } from '../src/data/images.ts';
+import { members } from '../src/data/members.ts';
 import { getProducts } from '../src/data/products.ts';
 
 export async function checkLocales(browser, baseUrl) {
@@ -103,6 +105,66 @@ export async function checkLocales(browser, baseUrl) {
     const llms = await (await fetch(`${baseUrl}/llms.txt`)).text();
     assert(llms.includes(vi['llms.description']));
     assert(llms.includes(chat.detail));
+
+    for (const [locale, dictionary, otherLocale] of [['vi', vi, 'en'], ['en', en, 'vi']]) {
+      for (const slug of clubPages) {
+        const path = pagePath(locale, slug);
+        const alternate = pagePath(otherLocale, slug);
+        const title = dictionary[`pages.${slug}.title`];
+        assert(sitemap.includes(`<loc>https://dav-daitech.github.io${path}</loc>`));
+        await page.setViewportSize({ width: 1440, height: 1000 });
+        assert.equal((await page.goto(`${baseUrl}${path}`)).status(), 200);
+        assert.equal(await page.locator('html').getAttribute('lang'), locale);
+        assert.equal(await page.getByRole('heading', { level: 1 }).textContent(), title);
+        assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), `https://dav-daitech.github.io${path}`);
+        assert.equal(await page.locator(`link[hreflang="${otherLocale}"]`).getAttribute('href'), `https://dav-daitech.github.io${alternate}`);
+        assert.equal(await page.locator('nav a[aria-current="page"]').textContent(), title);
+
+        if (slug === 'projects') {
+          assert.equal(await page.locator('.product-card:visible').count(), products.length);
+          await page.getByRole('button', { name: dictionary['products.chat.category'], exact: true }).click();
+          assert.equal(await page.locator('.product-card:visible').count(), 1);
+          await page.getByRole('button', { name: new RegExp(dictionary['products.all']) }).click();
+        }
+        if (slug === 'showcase') {
+          const images = page.locator('main figure img');
+          assert.equal(await images.count(), 3);
+          for (const image of await images.all()) {
+            await image.scrollIntoViewIfNeeded();
+            assert(await image.getAttribute('alt'));
+            await page.waitForFunction((element) => element.complete && element.naturalWidth > 0, await image.elementHandle());
+          }
+          const links = await page.locator('main figcaption a').evaluateAll((elements) => elements.map((link) => link.href));
+          assert.equal(links.length, await images.count());
+          assert.equal(links[0], new URL(launchImage.href, baseUrl).href);
+          const copy = getShowcaseImages(locale);
+          assert.deepEqual(await page.locator('main figcaption').allTextContents(), copy.map(({ caption }) => caption));
+          assert.deepEqual(await images.evaluateAll((elements) => elements.map((image) => image.alt)), copy.map(({ alt }) => alt));
+          assert.equal((await fetch(links[0], { method: 'HEAD' })).status, 200);
+          assert.match(await images.first().evaluate((image) => image.currentSrc), /\/images\/club\/orientationday-1600\.webp$/);
+        }
+        if (slug === 'members') {
+          if (members.length) {
+            assert.deepEqual(await page.locator('main h2').allTextContents(), members.map(({ name }) => name));
+          } else {
+            assert(await page.locator('main').getByText(dictionary['members.empty'], { exact: true }).isVisible());
+          }
+        }
+
+        await audit(`${locale} ${slug}`);
+        if (locale === 'en') {
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.screenshot({ path: `test-results/${slug}-desktop.png`, fullPage: true });
+        }
+        await page.setViewportSize({ width: 320, height: 900 });
+        await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+        assert(await page.locator('main').evaluate((main) => main.scrollWidth <= main.clientWidth), `${locale} ${slug} reflows at 200% text`);
+        if (locale === 'en') {
+          await page.locator(`a.language-switch[lang="${otherLocale}"]`).click();
+          await page.waitForURL(`${baseUrl}${alternate}`);
+        }
+      }
+    }
     assert.deepEqual(errors, [], 'No locale JavaScript errors');
   } finally {
     await context.close();
@@ -115,8 +177,12 @@ export async function checkLocales(browser, baseUrl) {
     await staticPage.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
     assert.equal(await staticPage.locator('html').getAttribute('lang'), 'vi', 'Language switching works without JavaScript');
     assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 3);
+    await staticPage.getByRole('link', { name: vi['pages.projects.title'], exact: true }).click();
+    await staticPage.waitForURL(`${baseUrl}/projects/`);
+    assert.equal(await staticPage.locator('.product-actions > a:visible').count(), products.length);
+    assert.equal(await staticPage.locator('button[data-filter]:visible').count(), 0);
   } finally {
     await noScript.close();
   }
-  console.log('Passed: Vietnamese translations, language switching with and without JS, persisted preferences, localized metadata, fonts, filters, dialogs, 5 responsive widths, 200% text, and accessibility audits.');
+  console.log('Passed: localized homepages and subpages, language switching, metadata, images, filters, dialogs, 200% text, and accessibility audits.');
 }

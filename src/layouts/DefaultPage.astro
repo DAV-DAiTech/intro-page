@@ -1,0 +1,49 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { useTranslations, type ClubPage } from '../i18n';
+
+interface Props {
+  slug: ClubPage;
+  image?: string;
+}
+
+const { slug, image } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+const title = t(`pages.${slug}.title`);
+const description = t(`pages.${slug}.description`);
+---
+<BaseLayout
+  pageSlug={slug}
+  title={`${title} · ${t('site.name')}`}
+  description={description}
+  socialTitle={title}
+  socialDescription={description}
+  image={image}
+>
+  <div class="page content-width">
+    <header class="page-heading">
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </header>
+    <slot />
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding-block: clamp(1.5rem, 4vw, 3.75rem) clamp(2.5rem, 6vw, 5rem); }
+  .page-heading {
+    display: grid;
+    gap: 1rem;
+    padding-block-end: clamp(1.25rem, 3vw, 2.25rem);
+    margin-block-end: clamp(1rem, 3vw, 2rem);
+    border-block-end: 1px solid var(--canvas-line);
+  }
+  h1 {
+    font-size: calc(clamp(2.5rem, 1.5rem + 4.5vw, 5.75rem) * var(--text-scale));
+    font-weight: var(--heading-weight);
+    letter-spacing: -.055em;
+    line-height: 1.12;
+    text-wrap: pretty;
+  }
+  p { max-inline-size: 62ch; color: var(--canvas-muted); }
+</style>

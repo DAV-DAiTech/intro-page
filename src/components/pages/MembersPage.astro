@@ -1,0 +1,60 @@
+---
+import DefaultPage from '../../layouts/DefaultPage.astro';
+import { meetingImage } from '../../data/images';
+import { members } from '../../data/members';
+import { getLocale, useTranslations } from '../../i18n';
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+<DefaultPage slug="members" image={meetingImage.image.src}>
+  <div class="roster">
+    {members.length ? (
+      <ul class="people" role="list">
+        {members.map(({ name, role }) => (
+          <li>
+            <h2>{name}</h2>
+            {role && <p>{role[locale]}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>{t('members.empty')}</p>
+    )}
+    <img {...meetingImage.image} alt={meetingImage.copy[locale].alt} decoding="async" />
+  </div>
+</DefaultPage>
+
+<style>
+  .roster {
+    display: grid;
+    align-items: start;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding: clamp(1rem, 3vw, 2.5rem);
+    border-radius: 2.25rem .5rem;
+    background: var(--surface);
+    color: var(--text);
+  }
+  img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 1.5rem .25rem;
+  }
+  .people {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li { padding-block: .875rem; border-block-start: 1px solid var(--line); }
+  h2 { font-size: calc(1.25rem * var(--text-scale)); font-weight: var(--heading-weight); }
+  p { color: var(--muted); }
+  @media (min-width: 52em) {
+    .roster { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  }
+</style>

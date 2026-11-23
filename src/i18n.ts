@@ -12,6 +12,13 @@ export const en = {
   'header.products': 'Our products',
   'header.story': 'Our story',
   'header.cta': 'Find your next tool',
+  'pages.projects.title': 'Projects',
+  'pages.projects.description': 'Explore tools built by DAiTech members for life at the Diplomatic Academy of Vietnam.',
+  'pages.showcase.title': 'Image showcase',
+  'pages.showcase.description': 'See DAiTech’s launch, first club meeting, and club artwork.',
+  'pages.members.title': 'Member list',
+  'pages.members.description': 'Meet the students behind DAiTech.',
+  'members.empty': 'The member list has yet to be published.',
   'a11y.triggerLabel': 'Accessibility settings',
   'a11y.trigger': 'Accessibility',
   'a11y.closeLabel': 'Close accessibility settings',
@@ -113,6 +120,13 @@ export const vi = {
   'header.products': 'Sản phẩm',
   'header.story': 'Về chúng mình',
   'header.cta': 'Khám phá sản phẩm',
+  'pages.projects.title': 'Dự án',
+  'pages.projects.description': 'Khám phá những công cụ do thành viên DAiTech phát triển cho đời sống sinh viên Học viện Ngoại giao.',
+  'pages.showcase.title': 'Thư viện ảnh',
+  'pages.showcase.description': 'Xem hình ảnh lễ ra mắt, buổi gặp mặt đầu tiên và tranh minh họa của DAiTech.',
+  'pages.members.title': 'Danh sách thành viên',
+  'pages.members.description': 'Gặp gỡ những sinh viên đứng sau DAiTech.',
+  'members.empty': 'Danh sách thành viên chưa được công bố.',
   'a11y.triggerLabel': 'Cài đặt trợ năng',
   'a11y.trigger': 'Trợ năng',
   'a11y.closeLabel': 'Đóng cài đặt trợ năng',
@@ -218,3 +232,9 @@ export const useTranslations = (locale?: string) => {
     ) : message;
   };
 };
+
+export const clubPages = ['projects', 'showcase', 'members'] as const;
+export type ClubPage = (typeof clubPages)[number];
+
+export const pagePath = (locale?: string, slug = ''): string =>
+  slug ? `${homePath(locale)}${slug}/` : homePath(locale);
