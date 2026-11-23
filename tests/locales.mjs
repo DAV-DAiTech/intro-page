@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import AxeBuilder from '@axe-core/playwright';
 import { en, vi } from '../src/i18n.ts';
+import { getProducts } from '../src/data/products.ts';
 
 export async function checkLocales(browser, baseUrl) {
   assert.deepEqual(Object.keys(vi).sort(), Object.keys(en).sort(), 'Every English string has a Vietnamese translation');
@@ -9,6 +10,10 @@ export async function checkLocales(browser, baseUrl) {
     assert(vi[key].trim(), `${key} is translated`);
     assert.deepEqual(placeholders(vi[key]), placeholders(en[key]), `${key} preserves its placeholders`);
   }
+
+  const products = getProducts('vi');
+  const match = products.find(({ id }) => id === 'match');
+  const chat = products.find(({ id }) => id === 'chat');
 
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, colorScheme: 'light' });
   const page = await context.newPage();
@@ -46,7 +51,7 @@ export async function checkLocales(browser, baseUrl) {
     }
     const schema = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
     assert.equal(schema['@graph'][1].name, vi['products.listName']);
-    assert.equal(schema['@graph'][1].itemListElement[0].item.description, vi['products.match.description']);
+    assert.equal(schema['@graph'][1].itemListElement[0].item.description, match.description);
     await page.evaluate(() => document.fonts.ready);
     assert.match(await page.locator('h1').evaluate((element) => getComputedStyle(element).fontFamily), /Lexend/, 'Vietnamese headings use a font with Vietnamese coverage');
     for (const font of await page.locator('link[rel="preload"][as="font"]').evaluateAll((links) => links.map((link) => link.href))) {
@@ -61,7 +66,7 @@ export async function checkLocales(browser, baseUrl) {
     await page.getByRole('button', { name: 'Trợ lý AI', exact: true }).click();
     assert(await page.getByRole('heading', { name: 'DAV Chatbot', exact: true }).isVisible());
     await page.getByRole('button', { name: 'Tìm hiểu thêm về DAV Chatbot', exact: true }).click();
-    assert(await page.getByRole('dialog').getByText(vi['products.chat.detail'], { exact: true }).isVisible());
+    assert(await page.getByRole('dialog').getByText(chat.detail, { exact: true }).isVisible());
     await audit('Vietnamese product dialog');
     await page.getByRole('button', { name: 'Đóng thông tin sản phẩm' }).click();
     await page.getByRole('button', { name: /Tất cả sản phẩm/ }).click();
@@ -97,7 +102,7 @@ export async function checkLocales(browser, baseUrl) {
     assert.match(sitemap, /<loc>https:\/\/dav-daitech.github.io\/en\/<\/loc>/);
     const llms = await (await fetch(`${baseUrl}/llms.txt`)).text();
     assert(llms.includes(vi['llms.description']));
-    assert(llms.includes(vi['products.chat.detail']));
+    assert(llms.includes(chat.detail));
     assert.deepEqual(errors, [], 'No locale JavaScript errors');
   } finally {
     await context.close();
