@@ -19,6 +19,11 @@ export async function checkLocales(browser, baseUrl) {
 
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, colorScheme: 'light' });
   const page = await context.newPage();
+  const header = page.getByRole('banner');
+  const menu = header.locator('summary');
+  const openMenu = async () => {
+    if (await menu.isVisible() && !(await menu.evaluate((item) => item.parentElement.open))) await menu.click();
+  };
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const audit = async (name) => {
@@ -44,6 +49,9 @@ export async function checkLocales(browser, baseUrl) {
     await page.getByRole('button', { name: 'Cài đặt trợ năng', exact: true }).click();
     await page.getByRole('button', { name: 'Đặt lại tùy chọn' }).click();
     await page.keyboard.press('Escape');
+    const languageSwitch = header.getByRole('link', { name: 'English', exact: true });
+    const settings = header.getByRole('button', { name: vi['a11y.triggerLabel'], exact: true });
+    assert.equal((await languageSwitch.boundingBox()).height, (await settings.boundingBox()).height);
     assert.equal(await page.title(), vi['meta.title']);
     assert.equal(await page.locator('meta[name="description"]').getAttribute('content'), vi['meta.description']);
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://dav-daitech.github.io/');
@@ -81,7 +89,9 @@ export async function checkLocales(browser, baseUrl) {
     for (const width of [320, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Vietnamese reflows at ${width}px`);
-      assert(await page.getByRole('link', { name: 'English', exact: true }).isVisible());
+      await openMenu();
+      assert(await header.getByRole('link', { name: 'English', exact: true }).isVisible());
+      if (await menu.isVisible()) await page.keyboard.press('Escape');
       if (width === 390) await page.screenshot({ path: 'test-results/vi-mobile.png', fullPage: true });
     }
     await page.setViewportSize({ width: 320, height: 900 });
@@ -91,7 +101,8 @@ export async function checkLocales(browser, baseUrl) {
     assert(await page.getByRole('dialog').evaluate((element) => element.scrollWidth <= element.clientWidth + 1), 'Vietnamese settings fit at 200% text');
     await page.keyboard.press('Escape');
     await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
-    await page.getByRole('link', { name: 'English', exact: true }).click();
+    await openMenu();
+    await header.getByRole('link', { name: 'English', exact: true }).click();
     await page.waitForURL(`${baseUrl}/en/`);
     assert.equal(await page.locator('html').getAttribute('lang'), 'en');
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
@@ -118,7 +129,15 @@ export async function checkLocales(browser, baseUrl) {
         assert.equal(await page.getByRole('heading', { level: 1 }).textContent(), title);
         assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), `https://dav-daitech.github.io${path}`);
         assert.equal(await page.locator(`link[hreflang="${otherLocale}"]`).getAttribute('href'), `https://dav-daitech.github.io${alternate}`);
-        assert.equal(await page.locator('nav a[aria-current="page"]').textContent(), title);
+        const mainNav = header.getByRole('navigation', { name: dictionary['header.navLabel'] });
+        const footerNav = page.getByRole('navigation', { name: dictionary['footer.navLabel'] });
+        for (const nav of [mainNav, footerNav]) {
+          assert.equal(await nav.locator('a[aria-current="page"]').textContent(), title);
+        }
+        const navItems = (nav) => nav.locator('a').evaluateAll((links) =>
+          links.map((link) => [link.textContent, link.getAttribute('href')])
+        );
+        assert.deepEqual(await navItems(mainNav), await navItems(footerNav));
 
         if (slug === 'projects') {
           assert.equal(await page.locator('.product-card:visible').count(), products.length);
@@ -160,7 +179,8 @@ export async function checkLocales(browser, baseUrl) {
         await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
         assert(await page.locator('main').evaluate((main) => main.scrollWidth <= main.clientWidth), `${locale} ${slug} reflows at 200% text`);
         if (locale === 'en') {
-          await page.locator(`a.language-switch[lang="${otherLocale}"]`).click();
+          await openMenu();
+          await header.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
           await page.waitForURL(`${baseUrl}${alternate}`);
         }
       }
@@ -170,14 +190,17 @@ export async function checkLocales(browser, baseUrl) {
     await context.close();
   }
 
-  const noScript = await browser.newContext({ javaScriptEnabled: false });
+  const noScript = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
   try {
     const staticPage = await noScript.newPage();
     await staticPage.goto(`${baseUrl}/en/`);
-    await staticPage.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
+    const staticHeader = staticPage.getByRole('banner');
+    await staticHeader.locator('summary').click();
+    await staticHeader.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
     assert.equal(await staticPage.locator('html').getAttribute('lang'), 'vi', 'Language switching works without JavaScript');
     assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 3);
-    await staticPage.getByRole('link', { name: vi['pages.projects.title'], exact: true }).click();
+    await staticHeader.locator('summary').click();
+    await staticHeader.getByRole('link', { name: vi['pages.projects.title'], exact: true }).click();
     await staticPage.waitForURL(`${baseUrl}/projects/`);
     assert.equal(await staticPage.locator('.product-actions > a:visible').count(), products.length);
     assert.equal(await staticPage.locator('button[data-filter]:visible').count(), 0);

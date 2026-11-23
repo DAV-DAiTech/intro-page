@@ -67,7 +67,8 @@
   }
 }
 *, ::before, ::after { box-sizing: border-box; }
-html { scroll-padding-top: 1.75rem; scrollbar-color: light-dark(var(--canvas), var(--control-border)) var(--surface); }
+html { scroll-padding-block-start: calc(var(--site-header-height, 6rem) + .75rem); scrollbar-color: light-dark(var(--canvas), var(--control-border)) var(--surface); }
+@media (max-height: 24em) { html { scroll-padding-block-start: 1.75rem; } }
 body { margin: 0; font-size: var(--text-body); line-height: 1.65; overflow-x: clip; }
 button, input, select { font: inherit; color: inherit; }
 button, a, input, select { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -77,7 +78,7 @@ button, h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { font-family: var(--font-heading); text-wrap: balance; overflow-wrap: anywhere; }
 p { overflow-wrap: anywhere; }
 svg { flex-shrink: 0; vertical-align: middle; }
-:is(a, button, input, select, [tabindex]):focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; box-shadow: 0 0 0 4px var(--focus-halo); }
+:is(a, button, input, select, summary, [tabindex]):focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; box-shadow: 0 0 0 4px var(--focus-halo); }
 dialog { max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--control-border); border-radius: 1.25rem; background: var(--surface); color: var(--text); padding: 3.5rem 2rem 2rem; }
 dialog:modal { overscroll-behavior: contain; }
 dialog::backdrop { background: light-dark(#1d0e25aa, #291b22cc); backdrop-filter: blur(5px); overflow: hidden; overscroll-behavior: contain; }

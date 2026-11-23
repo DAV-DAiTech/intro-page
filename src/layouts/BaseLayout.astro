@@ -75,7 +75,7 @@ const [, lightTheme = '#98472e', darkTheme = '#291b22'] = globalCss.match(/--can
     <a class="skip-link" href="#main">{t('nav.skipToContent')}</a>
     <SiteHeader pageSlug={pageSlug} />
     <main id="main" tabindex="-1"><slot /></main>
-    <SiteFooter />
+    <SiteFooter pageSlug={pageSlug} />
   </body>
 </html>
 

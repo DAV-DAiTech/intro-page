@@ -1,0 +1,38 @@
+---
+import { clubPages, getLocale, homePath, pagePath, useTranslations } from '../../i18n';
+
+interface Props { label: string; pageSlug?: string; showLanguage?: boolean; }
+const { label, pageSlug, showLanguage = false } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const home = homePath(locale);
+const otherLocale = locale === 'vi' ? 'en' : 'vi';
+---
+<nav aria-label={label}>
+  <ul class="nav-list" role="list">
+    <li><a href={`${home}#products`}>{t('nav.products')}</a></li>
+    <li><a href={`${home}#about`}>{t('nav.story')}</a></li>
+    {clubPages.map((slug) => (
+      <li><a href={pagePath(locale, slug)} aria-current={pageSlug === slug ? 'page' : undefined}>{t(`pages.${slug}.title`)}</a></li>
+    ))}
+  </ul>
+</nav>
+{showLanguage && (
+  <a class="button button-canvas language-switch" href={pagePath(otherLocale, pageSlug)} lang={otherLocale} hreflang={otherLocale} rel="alternate">{otherLocale === 'vi' ? 'Tiếng Việt' : 'English'}</a>
+)}
+
+<style>
+  .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: var(--nav-justify, start);
+    gap: .5rem var(--nav-gap, 1.5rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-ui);
+  }
+  .nav-list a { display: inline-flex; align-items: center; min-height: 44px; padding-block: .5rem; }
+  .nav-list a:is(:hover, [aria-current='page']) { text-decoration: underline; text-underline-offset: .3em; }
+  .language-switch { font-weight: 400; }
+</style>

@@ -1,47 +1,120 @@
 ---
 import Button from '../ui/Button.astro';
+import Icon from '../Icon.astro';
 import AccessibilitySettings from './AccessibilitySettings.astro';
-import { clubPages, getLocale, homePath, pagePath, useTranslations } from '../../i18n';
+import SiteNav from './SiteNav.astro';
+import { homePath, useTranslations } from '../../i18n';
 
 interface Props { pageSlug?: string; }
 const { pageSlug } = Astro.props;
-const locale = getLocale(Astro.currentLocale);
-const t = useTranslations(locale);
-const home = homePath(locale);
-const otherLocale = locale === 'vi' ? 'en' : 'vi';
+const t = useTranslations(Astro.currentLocale);
+const home = homePath(Astro.currentLocale);
 ---
-<header class="site-header content-width">
-  <a class="brand" href={`${home}#top`} aria-label={t('header.homeLabel')}>
-    <img src="/images/logo.png" alt="" width="42" height="42" />
-    <span>{t('header.brand')}</span>
-  </a>
-  <nav aria-label={t('header.navLabel')}>
-    <a href={`${home}#products`}>{t('header.products')}</a>
-    <a href={`${home}#about`}>{t('header.story')}</a>
-    {clubPages.map((slug) => (
-      <a href={pagePath(locale, slug)} aria-current={pageSlug === slug ? 'page' : undefined}>{t(`pages.${slug}.title`)}</a>
-    ))}
-    <a class="language-switch" href={pagePath(otherLocale, pageSlug)} lang={otherLocale} hreflang={otherLocale} rel="alternate">{otherLocale === 'vi' ? 'Tiếng Việt' : 'English'}</a>
-  </nav>
-  <div class="header-actions">
-    <Button class="nav-cta" variant="canvas" href={`${home}#products`} icon="diagonal">{t('header.cta')}</Button>
-    <AccessibilitySettings />
+<header class="site-header">
+  <div class="header-inner content-width">
+    <a class="brand" href={`${home}#top`} aria-label={t('header.homeLabel')}>
+      <img src="/images/logo.png" alt="" width="42" height="42" />
+      <span>{t('header.brand')}</span>
+    </a>
+    <div class="desktop-nav">
+      <SiteNav label={t('header.navLabel')} pageSlug={pageSlug} showLanguage />
+    </div>
+    <div class="header-actions">
+      <details class="mobile-menu">
+        <summary class="button button-canvas">
+          <Icon name="menu" />
+          <span class="sr-only">{t('nav.menu')}</span>
+        </summary>
+        <div class="mobile-panel">
+          <SiteNav label={t('header.navLabel')} pageSlug={pageSlug} showLanguage />
+        </div>
+      </details>
+      <AccessibilitySettings />
+    </div>
   </div>
 </header>
 
+<script>
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const menu = header?.querySelector<HTMLDetailsElement>('.mobile-menu');
+  const toggle = menu?.querySelector<HTMLElement>('summary');
+
+  if (header && menu && toggle) {
+    const updateHeight = () => {
+      document.documentElement.style.setProperty('--site-header-height', `${header.offsetHeight}px`);
+    };
+    updateHeight();
+    new ResizeObserver(updateHeight).observe(header);
+
+    document.addEventListener('click', ({ target }) => {
+      if (menu.open && target instanceof Element && (!menu.contains(target) || target.closest('a'))) menu.open = false;
+    });
+    menu.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !menu.open) return;
+      event.preventDefault();
+      menu.open = false;
+      toggle.focus();
+    });
+    document.addEventListener('focusin', ({ target }) => {
+      if (!(target instanceof HTMLElement)) return;
+      if (!menu.contains(target)) menu.open = false;
+      // A target can be inside the viewport and still be covered by the bar.
+      if (target.matches(':focus-visible') && target.closest('main, footer') && !target.closest('dialog[open]') &&
+        getComputedStyle(header).position === 'sticky' && target.getBoundingClientRect().top < header.getBoundingClientRect().bottom) {
+        target.scrollIntoView({ block: 'start', behavior: 'instant' });
+      }
+    });
+  }
+</script>
+
 <style>
-  .site-header { padding-block: 1.5rem; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2rem; color: var(--canvas-text); }
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 10;
+    container-type: inline-size;
+    background: var(--canvas);
+    color: var(--canvas-text);
+    border-block-end: 1px solid var(--canvas-line);
+  }
+  .header-inner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding-block: .75rem; }
   .brand { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; min-width: 0; min-height: 44px; font-family: var(--font-heading); font-weight: var(--heading-weight); font-size: calc(1.25rem * var(--text-scale)); letter-spacing: -.055em; }
   .brand img { border-radius: 50%; width: 2.25rem; height: 2.25rem; }
-  nav { display: flex; flex-wrap: wrap; justify-content: end; gap: .5rem 1.5rem; font-size: var(--text-ui); }
-  nav a { display: inline-flex; align-items: center; min-height: 44px; padding: .5rem 0; }
-  nav a:is(:hover, [aria-current='page']) { text-decoration: underline; text-underline-offset: .3em; }
-  nav .language-switch { padding-inline: .875rem; border: 1px solid currentColor; border-radius: 99px; }
+  .desktop-nav { --nav-justify: end; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; }
   .header-actions { display: flex; align-items: center; gap: .75rem; }
-  @media (max-width: 70em) { .header-actions :global(.nav-cta) { display: none; } }
-  @media (max-width: 44em) {
-    .site-header { padding-block: 1rem; grid-template-columns: 1fr auto; gap: .5rem 1rem; }
+  .mobile-menu { display: none; }
+  summary { position: relative; list-style: none; cursor: pointer; padding: .625rem; }
+  summary::-webkit-details-marker { display: none; }
+  .mobile-panel {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-end: max(1.25rem, calc((100% - 1280px) / 2));
+    inline-size: min(22rem, calc(100% - 2.5rem));
+    max-block-size: max(6rem, calc(100dvh - var(--site-header-height, 6rem) - 1rem));
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: .75rem 1rem;
+    border: 1px solid var(--canvas-line);
+    border-radius: 0 0 1rem 1rem;
+    background: var(--canvas);
+  }
+  .mobile-panel :global(.nav-list) { flex-direction: column; align-items: start; gap: .125rem; }
+  .mobile-panel :global(.language-switch) { margin-block-start: .5rem; }
+  @container (max-width: 70rem) { .header-actions :global(.nav-cta) { display: none; } }
+  @container (max-width: 58rem) {
+    .header-inner { grid-template-columns: minmax(0, 1fr) auto; gap: .75rem; }
     .brand { font-size: calc(1.125rem * var(--text-scale)); }
-    nav { grid-row: 2; grid-column: 1 / -1; justify-content: start; }
+    .brand img { width: 36px; height: 36px; }
+    .desktop-nav { display: none; }
+    .mobile-menu { display: block; }
+    summary, .header-actions :global(.settings-trigger) { inline-size: 44px; padding: 0; }
+    .header-actions :global(.settings-trigger span) { display: none; }
+  }
+  @container (max-width: 16rem) { .brand span { display: none; } }
+  @media (max-height: 24em), print { .site-header { position: relative; } }
+  @media print {
+    .header-inner { grid-template-columns: auto minmax(0, 1fr); }
+    .desktop-nav { display: grid; }
+    .header-actions { display: none; }
   }
 </style>

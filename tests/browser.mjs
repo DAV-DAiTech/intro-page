@@ -89,17 +89,43 @@ try {
   await page.getByRole('button', { name: 'More about DAV Chatbot' }).click();
   await page.getByRole('button', { name: 'Close product details' }).click();
   assert.equal(await page.locator('dialog[open]').count(), 0);
+  const header = page.getByRole('banner');
+  const menu = header.locator('summary');
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `No overflow at ${width}px`);
     assert(await page.locator('.hero h1').isVisible());
-    assert(await page.getByRole('link', { name: 'Our products', exact: true }).isVisible());
+    if (await menu.isVisible()) await menu.click();
+    assert(await header.getByRole('link', { name: 'Our products', exact: true }).isVisible());
+    if (await menu.isVisible()) await page.keyboard.press('Escape');
     if (width === 390) {
       await page.evaluate(() => scrollTo(0, 0));
       await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
     }
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => scrollTo(0, 600));
+    assert.equal(Math.round((await header.boundingBox()).y), 0, 'Header stays at the top after scrolling');
+    if (await menu.isVisible()) {
+      await menu.focus();
+      await page.keyboard.press('Enter');
+      const projectLink = header.getByRole('link', { name: 'Projects', exact: true });
+      await projectLink.focus();
+      await page.keyboard.press('Escape');
+      assert(await menu.evaluate((item) => item === document.activeElement), 'Escape restores menu focus');
+      assert.equal(await projectLink.isVisible(), false);
+      await menu.click();
+    }
+    await header.getByRole('link', { name: 'Our products', exact: true }).click();
+    await page.waitForFunction(() => {
+      const section = document.getElementById('products').getBoundingClientRect();
+      const header = document.querySelector('.site-header').getBoundingClientRect();
+      return location.hash === '#products' && section.top >= header.bottom && section.top < innerHeight / 2;
+    });
+    assert.equal(await header.locator('details[open]').count(), 0);
+  }
   assert.equal(await page.locator('.hero-content').evaluate((element) => getComputedStyle(element).animationName), 'none');
   assert.deepEqual(await page.evaluate(() => window.cspViolations), [], 'Production assets comply with the Content Security Policy');
 

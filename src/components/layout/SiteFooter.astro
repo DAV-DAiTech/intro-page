@@ -1,13 +1,19 @@
 ---
+import SiteNav from './SiteNav.astro';
 import { homePath, useTranslations } from '../../i18n';
 
+interface Props { pageSlug?: string; }
+const { pageSlug } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
 const home = homePath(Astro.currentLocale);
 ---
 <footer class="site-footer">
   <div class="footer-inner content-width">
     <div class="footer-identity"><a class="footer-brand" href={`${home}#top`}>{t('site.name')}</a><p>{t('footer.club')}<br />{t('footer.academy')}</p></div>
-    <nav class="footer-links" aria-label={t('footer.navLabel')}><a href={`${home}#products`}>{t('footer.products')}</a><a href={`${home}#about`}>{t('footer.about')}</a><a href="#top">{t('footer.backToTop')}</a></nav>
+    <div class="footer-links">
+      <SiteNav label={t('footer.navLabel')} pageSlug={pageSlug} />
+      <a class="back-to-top" href="#top">{t('footer.backToTop')}</a>
+    </div>
     <p class="copyright">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
   </div>
 </footer>
@@ -17,7 +23,9 @@ const home = homePath(Astro.currentLocale);
   .footer-identity { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; padding-bottom: 1.5rem; }
   .footer-brand { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-heading); font-size: calc(clamp(1.75rem, 1.5rem + 1.5vw, 2.75rem) * var(--text-scale)); letter-spacing: -.06em; font-weight: var(--heading-weight); }
   .footer-identity p { font-size: var(--text-ui); color: var(--muted); line-height: 1.6; }
-  .footer-links { display: flex; flex-wrap: wrap; gap: .5rem 2rem; border-block: 1px solid var(--line); padding-block: .5rem; }
-  .footer-links a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-ui); text-decoration: underline; text-underline-offset: .2em; }
+  .footer-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 2rem; border-block: 1px solid var(--line); padding-block: .5rem; }
+  .footer-links :global(a) { text-decoration: underline; text-underline-offset: .2em; }
+  .footer-links :global(a[aria-current='page']) { font-weight: 650; }
+  .back-to-top { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-ui); }
   .copyright { margin-top: 1.5rem; font-size: var(--text-caption); color: var(--muted); }
 </style>
