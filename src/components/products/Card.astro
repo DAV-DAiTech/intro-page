@@ -25,7 +25,7 @@ const { product, dialogId, heading: Heading = 'h3' } = Astro.props;
     <Button href={product.url} icon="diagonal" target="_blank" rel="noopener noreferrer" aria-label={t('products.cardCtaLabel', { link: product.link, name: product.name })}>
       {product.link}
     </Button>
-    <button class="button details-button" {...({ commandfor: dialogId, command: 'show-modal' } as any)} type="button" aria-label={t('products.moreAbout', { name: product.name })}>
+    <button class="button details-button" commandfor={dialogId} command="show-modal" type="button" aria-label={t('products.moreAbout', { name: product.name })}>
       {t('products.learnMore')} <span aria-hidden="true">+</span>
     </button>
   </div>

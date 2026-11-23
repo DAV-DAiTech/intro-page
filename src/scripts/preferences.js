@@ -64,7 +64,7 @@
       const control = event.target;
       if (!(control instanceof HTMLSelectElement || control instanceof HTMLInputElement)) return;
       const key = control.dataset.preference;
-      if (key in choices && choices[key].includes(control.value)) preferences[key] = control.value;
+      if (Object.hasOwn(choices, key) && choices[key].includes(control.value)) preferences[key] = control.value;
       if (control === motion) preferences.reduceMotion = motion.checked;
       save();
       sync();

@@ -40,12 +40,22 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    window.cspViolations = [];
+    document.addEventListener('securitypolicyviolation', ({ effectiveDirective, blockedURI }) => {
+      window.cspViolations.push({ effectiveDirective, blockedURI });
+    });
+  });
   await page.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.locator('h1').count(), 1);
   assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://dav-daitech.github.io/en/');
   assert.equal(await page.locator('link[rel="preload"][as="font"][crossorigin]').count(), 2, 'Default heading and body fonts are preloaded with crossorigin');
   assert.equal(await page.locator('script[type="application/ld+json"]').count(), 1, 'Structured data JSON-LD is emitted');
+  const csp = await page.locator('meta[http-equiv="content-security-policy"]').getAttribute('content');
+  assert.match(csp, /object-src 'none'/);
+  assert.match(csp, /script-src 'self' 'sha256-/);
+  assert.doesNotMatch(csp, /'unsafe-inline'|'unsafe-eval'/);
   assert.equal((await fetch(`${baseUrl}/robots.txt`)).status, 200);
   assert.equal((await fetch(`${baseUrl}/sitemap.xml`)).status, 200);
   assert.match(await (await fetch(`${baseUrl}/llms.txt`)).text(), /DAV Club Match/);
@@ -91,6 +101,7 @@ try {
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.equal(await page.locator('.hero-content').evaluate((element) => getComputedStyle(element).animationName), 'none');
+  assert.deepEqual(await page.evaluate(() => window.cspViolations), [], 'Production assets comply with the Content Security Policy');
 
   const html = await (await fetch(`${baseUrl}/en/`)).text();
   const collectionMarkup = html.match(/<section\b[^>]*data-product-collection[\s\S]*?<\/section>/)?.[0];

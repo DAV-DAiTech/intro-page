@@ -4,7 +4,7 @@ This is the product landing page for DAiTech, the AI and Technology Club at the 
 
 ## Architecture
 
-This is a static Astro website with zero UI framework overhead. Pages render to static HTML at build time and ship two small vanilla scripts (~1.5 kB total) for reading preferences and category filtering.
+Astro renders pages to static HTML at build time. Small vanilla scripts handle reading preferences and product filters.
 
 ### Key points
 
@@ -16,9 +16,7 @@ This is a static Astro website with zero UI framework overhead. Pages render to 
 
 ### Deployment
 
-Build output is static.
-
-[`vercel.json`](./vercel.json) and [`public/_headers`](./public/_headers) ship HTTP security headers (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, `Strict-Transport-Security`, `Origin-Agent-Cluster`, and HTTP-only CSP directives `frame-ancestors 'none'; upgrade-insecure-requests`) alongside long-lived immutable cache rules for `/_astro/*` assets on Vercel, Cloudflare Pages, and Netlify.
+Astro embeds the hash-based Content Security Policy in the generated HTML. [`vercel.json`](./vercel.json) and [`public/_headers`](./public/_headers) configure additional HTTP headers and cache rules for hosts that support those files. For other hosts, configure any additional headers in the hosting service.
 
 The canonical domain is set via `site` in [`astro.config.mjs`](./astro.config.mjs).
 
@@ -29,7 +27,7 @@ The canonical domain is set via `site` in [`astro.config.mjs`](./astro.config.mj
 - Vietnamese at `/` and English at `/en/`, with a language switcher
 - Light, dark, high contrast and system colors
 - Persistent accessibility and reading settings modal
-- Accessible (WCAG 2.2 AA), verified with automated Playwright, axe-core audits, 200% text reflow and custom text-spacing checks
+- Accessibility checks cover keyboard navigation, WCAG 2.2 AA axe-core rules, 200% text reflow, and custom text spacing
 - Responsive layout tested from 320px to 1440px
 - Auto-generated robots.txt, sitemap.xml and schema.org JSON-LD
 - Print stylesheet that strips interactive chrome and prints black ink on white paper
@@ -166,7 +164,7 @@ The site supports customisable reading preferences adapted from the accessibilit
 - Robots file: [`src/pages/robots.txt.ts`](./src/pages/robots.txt.ts)
 - Sitemap: [`src/pages/sitemap.xml.ts`](./src/pages/sitemap.xml.ts)
 - LLM summary: [`src/pages/llms.txt.ts`](./src/pages/llms.txt.ts)
-- Structured data: `Organization` and `ItemList` JSON-LD in [`src/pages/index.astro`](./src/pages/index.astro)
+- Structured data: `Organization` and `ItemList` JSON-LD in [`HomePage.astro`](./src/components/pages/HomePage.astro)
 
 ## License
 
@@ -180,4 +178,4 @@ Visual direction is in large part inspired by [Larkin](https://larkin.aldertheme
 
 Bundled typefaces (Inter, Special Gothic Expanded One, Atkinson Hyperlegible and Lexend) are self-hosted under the SIL Open Font License, their license texts are located in [`public/licenses/`](./public/licenses).
 
-Club photography and artwork in [`public/images/`](./public/images) belong to DAiTech.
+Club photography, artwork and branding in [`public/images/`](./public/images) belong to DAiTech. The MIT license covers the source code. Contact DAiTech for permission to reuse those assets.

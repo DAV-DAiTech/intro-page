@@ -11,7 +11,7 @@ const fields = [
   { id: 'reading-contrast', key: 'contrast', label: 'a11y.contrast', options: [['system', 'a11y.followSystem'], ['standard', 'a11y.contrastStandard'], ['high', 'a11y.contrastHigh']] }
 ] as const;
 ---
-<button class="button button-canvas settings-trigger" type="button" {...({ commandfor: 'accessibility-settings', command: 'show-modal' } as any)} aria-label={t('a11y.triggerLabel')}>
+<button class="button button-canvas settings-trigger" type="button" commandfor="accessibility-settings" command="show-modal" aria-label={t('a11y.triggerLabel')}>
   <Icon name="accessibility" size={18} /><span>{t('a11y.trigger')}</span>
 </button>
 <dialog id="accessibility-settings" class="settings-dialog" closedby="any" aria-labelledby="settings-title" aria-describedby="settings-description">
