@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import AxeBuilder from '@axe-core/playwright';
+import { baseUrl as siteUrl } from '../src/config.ts';
 import { clubPages, en, pagePath, vi } from '../src/i18n.ts';
 import { contactLinks } from '../src/data/contact.ts';
 import { getShowcaseImages, launchImage } from '../src/data/images.ts';
@@ -75,10 +76,10 @@ export async function checkLocales(browser, baseUrl) {
     assert.equal((await languageSwitch.boundingBox()).height, (await settings.boundingBox()).height);
     assert.equal(await page.title(), vi['meta.title']);
     assert.equal(await page.locator('meta[name="description"]').getAttribute('content'), vi['meta.description']);
-    assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://dav-daitech.github.io/');
+    assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), new URL('/', siteUrl).href);
     assert.equal(await page.locator('meta[property="og:locale"]').getAttribute('content'), 'vi_VN');
     for (const [locale, path] of [['en', '/en/'], ['vi', '/'], ['x-default', '/']]) {
-      assert.equal(await page.locator(`link[rel="alternate"][hreflang="${locale}"]`).getAttribute('href'), `https://dav-daitech.github.io${path}`);
+      assert.equal(await page.locator(`link[rel="alternate"][hreflang="${locale}"]`).getAttribute('href'), new URL(path, siteUrl).href);
     }
     const schema = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
     assert.equal(schema['@graph'][1].name, vi['products.listName']);
@@ -135,7 +136,7 @@ export async function checkLocales(browser, baseUrl) {
     assert.equal(await page.getByRole('link', { name: vi['notFound.cta'], exact: true }).getAttribute('href'), '/');
     assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'), 'noindex');
     const sitemap = await (await fetch(`${baseUrl}/sitemap.xml`)).text();
-    assert.match(sitemap, /<loc>https:\/\/dav-daitech.github.io\/en\/<\/loc>/);
+    assert(sitemap.includes(`<loc>${new URL('/en/', siteUrl)}</loc>`));
     const llms = await (await fetch(`${baseUrl}/llms.txt`)).text();
     assert(llms.includes(vi['llms.description']));
     assert(llms.includes(chat.detail));
@@ -145,13 +146,13 @@ export async function checkLocales(browser, baseUrl) {
         const path = pagePath(locale, slug);
         const alternate = pagePath(otherLocale, slug);
         const title = dictionary[`pages.${slug}.title`];
-        assert(sitemap.includes(`<loc>https://dav-daitech.github.io${path}</loc>`));
+        assert(sitemap.includes(`<loc>${new URL(path, siteUrl)}</loc>`));
         await page.setViewportSize({ width: 1440, height: 1000 });
         assert.equal((await page.goto(`${baseUrl}${path}`)).status(), 200);
         assert.equal(await page.locator('html').getAttribute('lang'), locale);
         assert.equal(await page.getByRole('heading', { level: 1 }).textContent(), title);
-        assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), `https://dav-daitech.github.io${path}`);
-        assert.equal(await page.locator(`link[hreflang="${otherLocale}"]`).getAttribute('href'), `https://dav-daitech.github.io${alternate}`);
+        assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), new URL(path, siteUrl).href);
+        assert.equal(await page.locator(`link[hreflang="${otherLocale}"]`).getAttribute('href'), new URL(alternate, siteUrl).href);
         const mainNav = header.getByRole('navigation', { name: dictionary['header.navLabel'] });
         const footerNav = page.getByRole('navigation', { name: dictionary['footer.navLabel'] });
         for (const nav of [mainNav, footerNav]) {

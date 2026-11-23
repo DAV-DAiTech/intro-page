@@ -14,7 +14,7 @@ Astro renders pages to static HTML at build time. Small vanilla scripts handle r
 - Reading preferences (appearance, font family, text scale, contrast, reduced motion) are applied inline before first paint
 - Product category filtering uses a single delegated click listener per collection in [`src/components/products/Collection.astro`](./src/components/products/Collection.astro)
 - Controls that require JavaScript are hidden when JS is disabled
-- Static hash-based Content Security Policy is enabled in [`astro.config.mjs`](./astro.config.mjs), emitting SHA-256 hashes for all bundled styles and scripts
+- Static hash-based Content Security Policy is enabled in [`src/config.ts`](./src/config.ts), emitting SHA-256 hashes for all bundled styles and scripts
 
 ### Deployment
 
@@ -92,6 +92,7 @@ src/
 │   ├── ui/
 │   │   └── Button.astro                # Reusable pill link button
 │   └── Icon.astro                      # Inline SVG icon set and IconName type
+├── config.ts             # Site URL, routes, locales, and Astro settings
 ├── data/
 │   ├── products.ts        # Typed product catalogue
 │   ├── members.ts         # Public club roster
@@ -125,9 +126,9 @@ tests/
 
 The site is structured so you can fork or update it without digging through component markup:
 
-- **Domain**: Set `baseUrl` in [`src/config.ts`](./src/config.ts). This also sets the host for DAV Chatbot and DAV AI Receptionist.
+- **Site settings** live in [`src/config.ts`](./src/config.ts), including the intro page’s public URL, locale and route lists, build settings, and Astro security settings.
 - **Shared site translations**: Managed in [`src/i18n.ts`](./src/i18n.ts).
-- **Product definitions and localized copy**: Managed in [`src/data/products.ts`](./src/data/products.ts).
+- **Product URLs and localized copy** live in [`src/data/products.ts`](./src/data/products.ts).
 - **Theme tokens**: Managed in the `:root` block of [`src/styles/global.css`](./src/styles/global.css). The `<meta name="theme-color">` tags in [`BaseLayout.astro`](./src/layouts/BaseLayout.astro) read `--canvas: light-dark(...)` directly from `global.css` at build time.
 - **Static assets**: Images and font licenses live in [`public/`](./public).
 
@@ -141,7 +142,7 @@ To render multiple independent product lists on the same page or across pages, p
 
 ### Club pages
 
-Projects, Image showcase, Member list and Contact share [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). It uses the slug to look up the localized title and description and renders content through its default slot. The [club page route](./src/pages/%5B...clubPage%5D.astro) generates both languages from the page list in `src/i18n.ts`.
+Projects, Image showcase, Member list and Contact share [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). It uses the slug to look up the localized title and description and renders content through its default slot. The [club page route](./src/pages/%5B...clubPage%5D.astro) generates both languages from the page list in `src/config.ts`.
 
 The Projects page lists the products and the DAiTech website. Edit the showcase entries in [`images.ts`](./src/data/images.ts) and add roster entries to [`members.ts`](./src/data/members.ts). Each roster entry needs a name and can include a role in both languages.
 

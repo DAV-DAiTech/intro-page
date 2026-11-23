@@ -1,3 +1,7 @@
+import { clubPages, defaultLocale, locales, type Locale } from './config.ts';
+
+export { clubPages, defaultLocale, locales, type Locale };
+
 export const en = {
   'site.name': 'DAiTech',
   'site.orgDescription': 'AI and Technology Club at the Diplomatic Academy of Vietnam.',
@@ -217,12 +221,10 @@ export const vi = {
   'llms.details': 'Chi tiết'
 } as const satisfies Translations;
 
-export const locales = ['vi', 'en'] as const;
-export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'vi';
 const messages = { en, vi };
 
-export const getLocale = (locale?: string): Locale => locale === 'en' ? 'en' : defaultLocale;
+export const getLocale = (locale?: string): Locale =>
+  locales.find((language) => language === locale) ?? defaultLocale;
 
 export const homePath = (locale?: string): string => {
   const language = getLocale(locale);
@@ -239,7 +241,6 @@ export const useTranslations = (locale?: string) => {
   };
 };
 
-export const clubPages = ['projects', 'showcase', 'members', 'contact'] as const;
 export type ClubPage = (typeof clubPages)[number];
 
 export const pagePath = (locale?: string, slug = ''): string =>

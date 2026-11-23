@@ -12,13 +12,13 @@ Astro tạo HTML tĩnh khi build, JavaScript xử lý tùy chọn đọc, điề
 - Trang áp dụng giao diện, phông chữ, cỡ chữ, độ tương phản và tùy chọn giảm chuyển động ngay trước lần hiển thị đầu tiên.
 - Mỗi danh sách sản phẩm dùng một trình xử lý sự kiện chung cho các nút lọc trong [`Collection.astro`](./src/components/products/Collection.astro).
 - Các điều khiển cần JavaScript được ẩn khi trình duyệt tắt JavaScript.
-- Chính sách bảo mật nội dung (CSP) dùng mã băm SHA-256 cho các đoạn script và CSS được đóng gói. Cấu hình nằm trong [`astro.config.mjs`](./astro.config.mjs).
+- Chính sách bảo mật nội dung (CSP) dùng mã băm SHA-256 cho các đoạn script và CSS được đóng gói. Cấu hình nằm trong [`src/config.ts`](./src/config.ts).
 
 ### Triển khai
 
 Astro nhúng CSP vào HTML được tạo ra. Hai tệp [`vercel.json`](./vercel.json) và [`public/_headers`](./public/_headers) bổ sung HTTP header và quy tắc bộ nhớ đệm trên Vercel và Netlify. Nếu host ở nền tảng khác, thiết lập các header đó tại nơi host trang.
 
-Đặt tên miền của trang bằng thuộc tính `site` trong [`astro.config.mjs`](./astro.config.mjs).
+Đặt địa chỉ của trang bằng `baseUrl` trong [`src/config.ts`](./src/config.ts).
 
 ## Tính năng
 
@@ -79,6 +79,7 @@ src/
 │   ├── sections/          # Các phần nội dung trên trang chủ
 │   ├── ui/                # Thành phần giao diện dùng lại
 │   └── Icon.astro         # Bộ biểu tượng SVG
+├── config.ts             # Địa chỉ trang, tuyến trang, ngôn ngữ và cấu hình Astro
 ├── data/
 │   ├── products.ts        # Danh mục sản phẩm và nội dung song ngữ
 │   ├── members.ts         # Danh sách thành viên công khai
@@ -101,9 +102,9 @@ tests/
 
 ### Cấu hình
 
-- Đặt tên miền bằng thuộc tính `site` trong [`astro.config.mjs`](./astro.config.mjs).
+- Địa chỉ trang giới thiệu, danh sách tuyến trang và ngôn ngữ, cấu hình build và bảo mật của Astro nằm trong [`src/config.ts`](./src/config.ts).
 - Chỉnh bản dịch dùng chung trong [`src/i18n.ts`](./src/i18n.ts).
-- Quản lý thông tin sản phẩm và nội dung song ngữ trong [`src/data/products.ts`](./src/data/products.ts).
+- Quản lý địa chỉ và nội dung song ngữ của từng sản phẩm trong [`src/data/products.ts`](./src/data/products.ts).
 - Các biến chủ đề nằm trong khối `:root` của [`src/styles/global.css`](./src/styles/global.css). Khi build, [`BaseLayout.astro`](./src/layouts/BaseLayout.astro) đọc giá trị `--canvas: light-dark(...)` để đặt màu chủ đề của trình duyệt.
 - Ảnh câu lạc bộ dùng cho quá trình build nằm trong [`src/assets/club/`](./src/assets/club). Logo và giấy phép phông chữ được phục vụ từ [`public/`](./public).
 
@@ -117,7 +118,7 @@ Khi dùng nhiều danh sách sản phẩm độc lập, truyền một `id` riê
 
 ### Các trang của câu lạc bộ
 
-Các trang Dự án, Thư viện ảnh, Danh sách thành viên và Liên hệ dùng chung [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). Bố cục dùng tên tuyến để tra tiêu đề và mô tả theo ngôn ngữ, sau đó chèn nội dung qua slot mặc định. [Tuyến trang câu lạc bộ](./src/pages/%5B...clubPage%5D.astro) tạo cả hai phiên bản ngôn ngữ từ danh sách trong [`src/i18n.ts`](./src/i18n.ts).
+Các trang Dự án, Thư viện ảnh, Danh sách thành viên và Liên hệ dùng chung [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). Bố cục dùng tên tuyến để tra tiêu đề và mô tả theo ngôn ngữ, sau đó chèn nội dung qua slot mặc định. [Tuyến trang câu lạc bộ](./src/pages/%5B...clubPage%5D.astro) tạo cả hai phiên bản ngôn ngữ từ danh sách trong [`src/config.ts`](./src/config.ts).
 
 Trang Dự án liệt kê các sản phẩm và trang web DAiTech. Chỉnh thư viện ảnh trong [`images.ts`](./src/data/images.ts) và thêm thành viên trong [`members.ts`](./src/data/members.ts). Mỗi mục thành viên cần có tên và có thể kèm vai trò bằng cả hai ngôn ngữ.
 
