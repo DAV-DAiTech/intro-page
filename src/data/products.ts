@@ -75,7 +75,7 @@ const products = [
     icon: 'sparkle',
     url: 'https://dav-daitech.github.io/avatar-kiosk/',
     sourceUrl: 'https://github.com/DAV-DAiTech/avatar-kiosk',
-    categoryKey: 'products.receptionist.category',
+    categoryKey: 'products.chat.category',
     copy: {
       en: {
         name: 'DAV AI Receptionist',

@@ -74,9 +74,10 @@ try {
   assert(await page.locator('.match-card').isVisible());
   assert.equal(await page.getByRole('button', { name: 'Student life', exact: true }).getAttribute('aria-pressed'), 'true');
   await page.getByRole('button', { name: 'AI assistant', exact: true }).click();
-  assert.equal(await page.locator('.product-card:visible').count(), 1);
+  assert.equal(await page.locator('.product-card:visible').count(), 2);
   assert(await page.getByRole('heading', { name: 'DAV Chatbot', exact: true }).isVisible());
-  assert.match(await page.getByRole('status').innerText(), /Showing 1 product in AI assistant/);
+  assert(await page.getByRole('heading', { name: 'DAV AI Receptionist', exact: true }).isVisible());
+  assert.match(await page.getByRole('status').innerText(), /Showing 2 products in AI assistant/);
   await page.getByRole('button', { name: /All products/ }).click();
   for (const product of ['DAV Club Match', 'DAV Chatbot', 'DAV AI Receptionist']) {
     const trigger = page.getByRole('button', { name: `More about ${product}`, exact: true });
@@ -147,7 +148,7 @@ try {
   const secondCollection = repeated.locator('#additional-products');
   await secondCollection.getByRole('button', { name: 'AI assistant', exact: true }).click();
   assert.equal(await firstCollection.locator('.product-card:visible').count(), 3, 'Filtering one collection leaves the other unchanged');
-  assert.equal(await secondCollection.locator('.product-card:visible').count(), 1);
+  assert.equal(await secondCollection.locator('.product-card:visible').count(), 2);
   await secondCollection.getByRole('button', { name: 'More about DAV Chatbot' }).click();
   assert(await secondCollection.getByRole('dialog').isVisible(), 'Repeated cards open their own dialog');
   assert.equal(await firstCollection.locator('dialog[open]').count(), 0);

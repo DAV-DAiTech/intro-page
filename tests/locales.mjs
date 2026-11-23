@@ -76,6 +76,8 @@ export async function checkLocales(browser, baseUrl) {
     assert.equal(await page.getByRole('status').textContent(), 'Đang hiển thị 1 sản phẩm thuộc danh mục Đời sống sinh viên');
     await page.getByRole('button', { name: 'Trợ lý AI', exact: true }).click();
     assert(await page.getByRole('heading', { name: 'DAV Chatbot', exact: true }).isVisible());
+    assert(await page.getByRole('heading', { name: 'DAV AI Receptionist', exact: true }).isVisible());
+    assert.equal(await page.getByRole('status').textContent(), 'Đang hiển thị 2 sản phẩm thuộc danh mục Trợ lý AI');
     await page.getByRole('button', { name: 'Tìm hiểu thêm về DAV Chatbot', exact: true }).click();
     assert(await page.getByRole('dialog').getByText(chat.detail, { exact: true }).isVisible());
     await audit('Vietnamese product dialog');
@@ -164,7 +166,7 @@ export async function checkLocales(browser, baseUrl) {
             }
           }
           await page.getByRole('button', { name: dictionary['products.chat.category'], exact: true }).click();
-          assert.equal(await page.locator('.product-card:visible').count(), 1);
+          assert.equal(await page.locator('.product-card:visible').count(), 2);
           await page.getByRole('button', { name: new RegExp(dictionary['products.all']) }).click();
         }
         if (slug === 'showcase') {
