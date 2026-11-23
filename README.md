@@ -1,5 +1,7 @@
 # DAiTech product landing page
 
+**English** | [Tiếng Việt](./README.vi.md)
+
 This is the product landing page for DAiTech, the AI and Technology Club at the Diplomatic Academy of Vietnam (DAV), built with [Astro](https://astro.build). It introduces the club and serves as the directory for tools made by our club members.
 
 ## Architecture
@@ -16,9 +18,9 @@ Astro renders pages to static HTML at build time. Small vanilla scripts handle r
 
 ### Deployment
 
-Astro embeds the hash-based Content Security Policy in the generated HTML. [`vercel.json`](./vercel.json) and [`public/_headers`](./public/_headers) configure additional HTTP headers and cache rules for hosts that support those files. For other hosts, configure any additional headers in the hosting service.
+Astro embeds the hash-based Content Security Policy in the generated HTML. [`vercel.json`](./vercel.json) and [`public/_headers`](./public/_headers) configure additional HTTP headers and cache rules for Vercel and Netlify respectively. For other hosts, configure any additional headers in the hosting service.
 
-The canonical domain is set via `site` in [`astro.config.mjs`](./astro.config.mjs).
+Set the public site URL with `baseUrl` in [`src/config.ts`](./src/config.ts).
 
 ## Features
 
@@ -123,7 +125,7 @@ tests/
 
 The site is structured so you can fork or update it without digging through component markup:
 
-- **Domain**: Set `site` in [`astro.config.mjs`](./astro.config.mjs).
+- **Domain**: Set `baseUrl` in [`src/config.ts`](./src/config.ts). This also sets the host for DAV Chatbot and DAV AI Receptionist.
 - **Shared site translations**: Managed in [`src/i18n.ts`](./src/i18n.ts).
 - **Product definitions and localized copy**: Managed in [`src/data/products.ts`](./src/data/products.ts).
 - **Theme tokens**: Managed in the `:root` block of [`src/styles/global.css`](./src/styles/global.css). The `<meta name="theme-color">` tags in [`BaseLayout.astro`](./src/layouts/BaseLayout.astro) read `--canvas: light-dark(...)` directly from `global.css` at build time.
