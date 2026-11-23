@@ -70,8 +70,33 @@ const dialogId = (product: Product) => `${id}-details-${product.id}`;
   .product-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
   .standalone .filters { padding-block-start: 0; }
   .standalone .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-    column-gap: clamp(1rem, 3vw, 2rem);
+    container-type: inline-size;
+    grid-auto-rows: 1fr;
+  }
+  .standalone .product-grid > :global(.product-card) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+  }
+  .standalone .product-grid :global(.product-heading h2) { flex: 0 1 auto; }
+  .standalone .product-grid :global(.product-actions) {
+    min-inline-size: 0;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+  }
+  @container (min-width: 36rem) {
+    .standalone .product-grid > :global(.product-card) {
+      grid-template-columns: minmax(0, 1fr) fit-content(46%);
+      grid-template-rows: auto 1fr;
+      column-gap: clamp(1rem, 3vw, 2rem);
+    }
+    .standalone .product-grid :global(.product-actions) {
+      grid-column: 2;
+      grid-row: 1 / -1;
+      align-self: center;
+      align-items: flex-end;
+      margin-block-start: 0;
+    }
   }
   @media (max-width: 44em) { .products-section { border-radius: 2rem .375rem; } }
 </style>

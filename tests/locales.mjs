@@ -25,6 +25,26 @@ export async function checkLocales(browser, baseUrl) {
   const openMenu = async () => {
     if (await menu.isVisible() && !(await menu.evaluate((item) => item.parentElement.open))) await menu.click();
   };
+  const checkProjectCardLayout = async (wide = true) => {
+    await page.evaluate(() => document.fonts.ready);
+    const rows = await page.locator('.product-card:visible').evaluateAll((cards) => cards.map((card) => ({
+      row: card.getBoundingClientRect().toJSON(),
+      description: card.querySelector('.product-description').getBoundingClientRect().toJSON(),
+      actions: card.querySelector('.product-actions').getBoundingClientRect().toJSON(),
+      firstAction: card.querySelector('.product-launch').getBoundingClientRect().toJSON(),
+      lastAction: card.querySelector('.details-button').getBoundingClientRect().toJSON()
+    })));
+    const edge = wide ? 'right' : 'left';
+    for (const [index, { row, description, actions, firstAction, lastAction }] of rows.entries()) {
+      assert.equal(Math.round(row.height), Math.round(rows[0].row.height), 'Project rows have equal height');
+      if (index > 0) assert(row.top >= rows[index - 1].row.bottom - 1, 'Projects are listed in one column');
+      assert(lastAction.top >= firstAction.bottom, 'Learn more sits below the launch button');
+      assert.equal(Math.round(firstAction[edge]), Math.round(row[edge]), `Project launch buttons align to the ${edge} edge`);
+      assert.equal(Math.round(lastAction[edge]), Math.round(row[edge]), `Learn more buttons align to the ${edge} edge`);
+      if (wide) assert(actions.left >= description.right, 'Project actions sit beside their description');
+      else assert(actions.top >= description.bottom, 'Project actions reflow below the description in a narrow layout');
+    }
+  };
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const audit = async (name) => {
@@ -145,6 +165,7 @@ export async function checkLocales(browser, baseUrl) {
         if (slug === 'projects') {
           const projects = getProjects(locale);
           assert.equal(await page.locator('.product-card:visible').count(), projects.length);
+          await checkProjectCardLayout();
           assert.equal(await page.locator('.product-source:visible').count(), 0);
           const cards = page.locator('.product-card');
           for (const project of projects) {
@@ -167,6 +188,7 @@ export async function checkLocales(browser, baseUrl) {
           }
           await page.getByRole('button', { name: dictionary['products.chat.category'], exact: true }).click();
           assert.equal(await page.locator('.product-card:visible').count(), 2);
+          await checkProjectCardLayout();
           await page.getByRole('button', { name: new RegExp(dictionary['products.all']) }).click();
         }
         if (slug === 'showcase') {
@@ -209,6 +231,7 @@ export async function checkLocales(browser, baseUrl) {
         await page.setViewportSize({ width: 320, height: 900 });
         await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
         assert(await page.locator('main').evaluate((main) => main.scrollWidth <= main.clientWidth), `${locale} ${slug} reflows at 200% text`);
+        if (slug === 'projects') await checkProjectCardLayout(false);
         if (locale === 'en') {
           await openMenu();
           await header.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
