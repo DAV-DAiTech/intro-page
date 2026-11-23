@@ -13,6 +13,7 @@ interface Props {
 }
 
 const { product, id } = Astro.props;
+const newTab = !product.url.startsWith('/');
 ---
 <dialog id={id} class="product-dialog" closedby="any" aria-labelledby={`${id}-title`}>
   <form method="dialog">
@@ -22,10 +23,19 @@ const { product, id } = Astro.props;
   <h2 id={`${id}-title`}>{product.name}</h2>
   <p class="dialog-summary">{product.summary}</p>
   <p>{product.detail}</p>
-  <Button class="dialog-cta" href={product.url} icon="diagonal" target="_blank" rel="noopener noreferrer">
-    {t('products.open', { name: product.name })}
-    <span slot="suffix" class="sr-only"> {t('products.newTabSuffix')}</span>
-  </Button>
+  <div class="dialog-actions">
+    <Button href={product.url} icon={newTab ? 'diagonal' : 'arrow'}
+      target={newTab ? '_blank' : undefined} rel={newTab ? 'noopener noreferrer' : undefined}>
+      {t('products.open', { name: product.name })}
+      {newTab && <span slot="suffix" class="sr-only"> {t('products.newTabSuffix')}</span>}
+    </Button>
+    {product.sourceUrl && (
+      <a class="product-source" href={product.sourceUrl} aria-label={t('products.sourceLabel', { name: product.name })}>
+        <Icon name="github" size={16} />
+        <span>{t('products.source')}</span>
+      </a>
+    )}
+  </div>
 </dialog>
 
 <style>
@@ -33,6 +43,15 @@ const { product, id } = Astro.props;
   h2 { font-size: calc(1.8125rem * var(--text-scale)); line-height: 1.3; letter-spacing: -.035em; }
   p { color: var(--muted); font-size: var(--text-body); line-height: 1.8; margin-top: 1rem; }
   .dialog-summary { color: var(--accent); }
-  .dialog-cta { margin-top: 1.75rem; }
+  .dialog-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: 1.75rem; }
+  .product-source {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-block-size: 44px;
+    font-size: var(--text-ui);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
   @media (max-width: 44em) { .product-dialog { padding-inline: 1.5rem; } }
 </style>

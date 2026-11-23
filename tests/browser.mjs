@@ -60,8 +60,9 @@ try {
   assert.equal((await fetch(`${baseUrl}/sitemap.xml`)).status, 200);
   assert.match(await (await fetch(`${baseUrl}/llms.txt`)).text(), /DAV Club Match/);
   assert.equal(await page.locator('.product-card:visible').count(), 3);
-  assert.equal(await page.locator('.product-actions > a').nth(0).getAttribute('href'), 'https://dav-club-match.vercel.app/');
-  assert.equal(await page.locator('.product-actions > a').nth(1).getAttribute('href'), 'https://dav-daitech.github.io/dav-assistant/');
+  assert.equal(await page.locator('.product-card .product-source').count(), 0);
+  assert.equal(await page.locator('.product-launch').nth(0).getAttribute('href'), 'https://dav-club-match.vercel.app/');
+  assert.equal(await page.locator('.product-launch').nth(1).getAttribute('href'), 'https://dav-daitech.github.io/dav-assistant/');
   assert.equal(await page.getByRole('link', { name: /Open the kiosk with DAV AI Receptionist/ }).getAttribute('href'), 'https://dav-daitech.github.io/avatar-kiosk/');
   assert.deepEqual(await page.locator('.button:visible').evaluateAll((buttons) => [...new Set(buttons.map((b) => Math.round(b.getBoundingClientRect().height)))]), [44], 'All buttons share a uniform 44px height');
   assert(await page.locator('img').evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0)), 'All images load');

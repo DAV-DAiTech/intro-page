@@ -1,8 +1,8 @@
 ---
 import DefaultPage from '../../layouts/DefaultPage.astro';
 import ProductCollection from '../products/Collection.astro';
-import { getProducts } from '../../data/products';
+import { getProjects } from '../../data/products';
 ---
 <DefaultPage slug="projects">
-  <ProductCollection products={getProducts(Astro.currentLocale)} showIntro={false} />
+  <ProductCollection products={getProjects(Astro.currentLocale)} showIntro={false} />
 </DefaultPage>

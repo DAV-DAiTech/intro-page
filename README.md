@@ -131,7 +131,7 @@ The site is structured so you can fork or update it without digging through comp
 
 ### Adding a product
 
-Add an entry to the `products` array in [`src/data/products.ts`](./src/data/products.ts). Put the product’s name, summary, description, detail text, and action button label in its `copy.en` and `copy.vi` objects. Set `categoryKey` to a category in [`src/i18n.ts`](./src/i18n.ts), adding the category to both dictionaries if needed.
+Add an entry to the `products` array in [`src/data/products.ts`](./src/data/products.ts). Put the product’s name, summary, description, detail text, and action button label in its `copy.en` and `copy.vi` objects. Set `categoryKey` to a category in [`src/i18n.ts`](./src/i18n.ts), adding the category to both dictionaries if needed. Add `sourceUrl` to display a source link in the Learn more dialog.
 
 Category filter buttons, product counts, detail dialogs and the JSON-LD ItemList in [`HomePage.astro`](./src/components/pages/HomePage.astro) all derive from this.
 
@@ -141,7 +141,7 @@ To render multiple independent product lists on the same page or across pages, p
 
 Projects, Image showcase, Member list and Contact share [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). It uses the slug to look up the localized title and description and renders content through its default slot. The [club page route](./src/pages/%5B...clubPage%5D.astro) generates both languages from the page list in `src/i18n.ts`.
 
-The Projects page reads the existing product catalogue. Edit the showcase entries in [`images.ts`](./src/data/images.ts) and add roster entries to [`members.ts`](./src/data/members.ts). Each roster entry needs a name and can include a role in both languages.
+The Projects page lists the products and the DAiTech website. Edit the showcase entries in [`images.ts`](./src/data/images.ts) and add roster entries to [`members.ts`](./src/data/members.ts). Each roster entry needs a name and can include a role in both languages.
 
 The Contact page and footer share the links in [`contact.ts`](./src/data/contact.ts).
 

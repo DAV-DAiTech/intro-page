@@ -1,5 +1,5 @@
 import type { IconName } from '../components/Icon.astro';
-import { getLocale, useTranslations, type Locale, type TranslationKey } from '../i18n.ts';
+import { getLocale, homePath, useTranslations, type Locale, type TranslationKey } from '../i18n.ts';
 
 export interface Product {
   id: string;
@@ -10,12 +10,13 @@ export interface Product {
   summary: string;
   description: string;
   url: string;
+  sourceUrl?: string;
   detail: string;
   link: string;
 }
 
 type ProductCopy = Pick<Product, 'name' | 'summary' | 'description' | 'detail' | 'link'>;
-type ProductDefinition = Pick<Product, 'id' | 'preview' | 'icon' | 'url'> & {
+type ProductDefinition = Pick<Product, 'id' | 'preview' | 'icon' | 'url' | 'sourceUrl'> & {
   categoryKey: TranslationKey;
   copy: Record<Locale, ProductCopy>;
 };
@@ -49,6 +50,7 @@ const products = [
     preview: 'chat',
     icon: 'sparkle',
     url: 'https://dav-daitech.github.io/dav-assistant/',
+    sourceUrl: 'https://github.com/DAV-DAiTech/dav-assistant',
     categoryKey: 'products.chat.category',
     copy: {
       en: {
@@ -72,6 +74,7 @@ const products = [
     preview: 'chat',
     icon: 'sparkle',
     url: 'https://dav-daitech.github.io/avatar-kiosk/',
+    sourceUrl: 'https://github.com/DAV-DAiTech/avatar-kiosk',
     categoryKey: 'products.receptionist.category',
     copy: {
       en: {
@@ -92,12 +95,41 @@ const products = [
   },
 ] satisfies readonly ProductDefinition[];
 
-export const getProducts = (locale?: string): readonly Product[] => {
+const website = {
+  id: 'website',
+  preview: 'match',
+  icon: 'code',
+  sourceUrl: 'https://github.com/DAV-DAiTech/intro-page',
+  categoryKey: 'products.website.category',
+  copy: {
+    en: {
+      name: 'DAiTech website',
+      summary: 'The home of DAiTech and its projects.',
+      description: 'A bilingual website for the club’s projects, photos, members, and contact information.',
+      detail: 'The site is built with Astro and includes reading preferences for appearance, text size, font, contrast, and motion.',
+      link: 'Visit the homepage',
+    },
+    vi: {
+      name: 'Website DAiTech',
+      summary: 'Nơi giới thiệu DAiTech và các dự án của câu lạc bộ.',
+      description: 'Trang web song ngữ giới thiệu dự án, hình ảnh, thành viên và thông tin liên hệ của câu lạc bộ.',
+      detail: 'Trang web được xây dựng bằng Astro, với các tùy chọn về giao diện, cỡ chữ, phông chữ, độ tương phản và hiệu ứng chuyển động.',
+      link: 'Về trang chủ',
+    },
+  },
+} satisfies Omit<ProductDefinition, 'url'>;
+
+function localizeProducts(definitions: readonly ProductDefinition[], locale?: string): readonly Product[] {
   const language = getLocale(locale);
   const t = useTranslations(language);
-  return products.map(({ categoryKey, copy, ...product }) => ({
+  return definitions.map(({ categoryKey, copy, ...product }) => ({
     ...product,
     category: t(categoryKey),
     ...copy[language],
   }));
-};
+}
+
+export const getProducts = (locale?: string) => localizeProducts(products, locale);
+
+export const getProjects = (locale?: string) =>
+  localizeProducts([...products, { ...website, url: homePath(locale) }], locale);

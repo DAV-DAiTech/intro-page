@@ -4,7 +4,7 @@ import { clubPages, en, pagePath, vi } from '../src/i18n.ts';
 import { contactLinks } from '../src/data/contact.ts';
 import { getShowcaseImages, launchImage } from '../src/data/images.ts';
 import { members } from '../src/data/members.ts';
-import { getProducts } from '../src/data/products.ts';
+import { getProducts, getProjects } from '../src/data/products.ts';
 
 export async function checkLocales(browser, baseUrl) {
   assert.deepEqual(Object.keys(vi).sort(), Object.keys(en).sort(), 'Every English string has a Vietnamese translation');
@@ -141,7 +141,28 @@ export async function checkLocales(browser, baseUrl) {
         assert.deepEqual(await navItems(mainNav), await navItems(footerNav));
 
         if (slug === 'projects') {
-          assert.equal(await page.locator('.product-card:visible').count(), products.length);
+          const projects = getProjects(locale);
+          assert.equal(await page.locator('.product-card:visible').count(), projects.length);
+          assert.equal(await page.locator('.product-source:visible').count(), 0);
+          const cards = page.locator('.product-card');
+          for (const project of projects) {
+            const card = cards.filter({ has: page.getByRole('heading', { name: project.name, exact: true }) });
+            const sourceName = dictionary['products.sourceLabel'].replace('{name}', project.name);
+            const detailsName = dictionary['products.moreAbout'].replace('{name}', project.name);
+            await card.getByRole('button', { name: detailsName, exact: true }).click();
+            const source = page.getByRole('dialog').getByRole('link', { name: sourceName, exact: true });
+            if (project.sourceUrl) {
+              assert.equal(await source.getAttribute('href'), project.sourceUrl);
+            } else {
+              assert.equal(await source.count(), 0);
+            }
+            await page.keyboard.press('Escape');
+            if (project.id === 'website') {
+              const home = card.getByRole('link', { name: project.link, exact: true });
+              assert.equal(await home.getAttribute('href'), pagePath(locale));
+              assert.equal(await home.getAttribute('target'), null);
+            }
+          }
           await page.getByRole('button', { name: dictionary['products.chat.category'], exact: true }).click();
           assert.equal(await page.locator('.product-card:visible').count(), 1);
           await page.getByRole('button', { name: new RegExp(dictionary['products.all']) }).click();
@@ -206,11 +227,13 @@ export async function checkLocales(browser, baseUrl) {
     await staticHeader.locator('summary').click();
     await staticHeader.getByRole('link', { name: 'Tiếng Việt', exact: true }).click();
     assert.equal(await staticPage.locator('html').getAttribute('lang'), 'vi', 'Language switching works without JavaScript');
-    assert.equal(await staticPage.locator('.product-actions > a:visible').count(), 3);
+    assert.equal(await staticPage.locator('.product-launch:visible').count(), products.length);
     await staticHeader.locator('summary').click();
     await staticHeader.getByRole('link', { name: vi['pages.projects.title'], exact: true }).click();
     await staticPage.waitForURL(`${baseUrl}/projects/`);
-    assert.equal(await staticPage.locator('.product-actions > a:visible').count(), products.length);
+    const projects = getProjects('vi');
+    assert.equal(await staticPage.locator('.product-launch:visible').count(), projects.length);
+    assert.equal(await staticPage.locator('.product-source:visible').count(), 0);
     assert.equal(await staticPage.locator('button[data-filter]:visible').count(), 0);
   } finally {
     await noScript.close();

@@ -13,6 +13,7 @@ interface Props {
 }
 
 const { product, dialogId, heading: Heading = 'h3' } = Astro.props;
+const newTab = !product.url.startsWith('/');
 ---
 <article class={`product-card ${product.preview}-card`} data-category={product.category}>
   <div class="product-heading">
@@ -22,7 +23,9 @@ const { product, dialogId, heading: Heading = 'h3' } = Astro.props;
   </div>
   <p class="product-description">{product.description}</p>
   <div class="product-actions">
-    <Button href={product.url} icon="diagonal" target="_blank" rel="noopener noreferrer" aria-label={t('products.cardCtaLabel', { link: product.link, name: product.name })}>
+    <Button class="product-launch" href={product.url} icon={newTab ? 'diagonal' : 'arrow'}
+      target={newTab ? '_blank' : undefined} rel={newTab ? 'noopener noreferrer' : undefined}
+      aria-label={newTab ? t('products.cardCtaLabel', { link: product.link, name: product.name }) : undefined}>
       {product.link}
     </Button>
     <button class="button details-button" commandfor={dialogId} command="show-modal" type="button" aria-label={t('products.moreAbout', { name: product.name })}>
