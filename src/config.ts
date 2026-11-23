@@ -1,6 +1,6 @@
 import type { AstroUserConfig } from 'astro';
 
-export const baseUrl = 'https://dav-daitech.github.io';
+export const baseUrl = 'https://daitech-landing.vercel.app/';
 export const locales = ['vi', 'en'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'vi';
