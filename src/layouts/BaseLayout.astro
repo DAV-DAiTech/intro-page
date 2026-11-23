@@ -1,6 +1,7 @@
 ---
 import SiteHeader from '../components/layout/SiteHeader.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
+import { artworkImage } from '../data/images';
 import { defaultLocale, getLocale, homePath, locales, useTranslations } from '../i18n';
 
 import '@fontsource-variable/inter';
@@ -22,7 +23,7 @@ const t = useTranslations(locale);
 
 interface Props {
   title?: string; description?: string; socialTitle?: string; socialDescription?: string;
-  image?: string; preloadImage?: string; noindex?: boolean; schema?: unknown;
+  image?: string; noindex?: boolean; schema?: unknown;
 }
 
 const {
@@ -30,7 +31,7 @@ const {
   description = t('meta.description'),
   socialTitle = t('meta.socialTitle'),
   socialDescription = t('meta.socialDescription'),
-  image = '/images/club-artwork.webp', preloadImage, noindex = false, schema
+  image = artworkImage.image.src, noindex = false, schema
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const isVietnamese = locale === 'vi';
@@ -67,7 +68,6 @@ const [, lightTheme = '#98472e', darkTheme = '#291b22'] = globalCss.match(/--can
     <link rel="icon" type="image/png" href="/images/logo.png" />
     {preloadFonts.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
     <script is:inline set:html={preferencesScript} />
-    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
     <slot name="head" />
     {schema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />}
   </head>
