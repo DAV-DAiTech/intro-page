@@ -192,23 +192,34 @@ export async function checkLocales(browser, baseUrl) {
           await page.getByRole('button', { name: new RegExp(dictionary['products.all']) }).click();
         }
         if (slug === 'showcase') {
+          const copy = getShowcaseImages(locale);
           const images = page.locator('main figure img');
-          assert.equal(await images.count(), 3);
+          assert.equal(await images.count(), copy.length);
           for (const image of await images.all()) {
             await image.scrollIntoViewIfNeeded();
             assert(await image.getAttribute('alt'));
             await page.waitForFunction((element) => element.complete && element.naturalWidth > 0, await image.elementHandle());
           }
           const links = await page.locator('main figcaption a').evaluateAll((elements) => elements.map((link) => link.href));
-          assert.equal(links.length, await images.count());
-          assert.equal(links[0], new URL(launchImage.href, baseUrl).href);
-          const copy = getShowcaseImages(locale);
+          assert.deepEqual(links, copy.map(({ href, image }) => new URL(href ?? image.src, baseUrl).href));
           assert.deepEqual(await page.locator('main figcaption').allTextContents(), copy.map(({ caption }) => caption));
           assert.deepEqual(await images.evaluateAll((elements) => elements.map((image) => image.alt)), copy.map(({ alt }) => alt));
-          assert.equal((await fetch(links[0], { method: 'HEAD' })).status, 200);
-          assert.match(await images.first().evaluate((image) => image.currentSrc), /\/images\/club\/orientationday-1600\.webp$/);
+          const launch = page.getByRole('img', { name: launchImage.copy[locale].alt, exact: true });
+          assert.equal((await fetch(new URL(launchImage.href, baseUrl), { method: 'HEAD' })).status, 200);
+          assert.match(await launch.evaluate((image) => image.currentSrc), /\/images\/club\/orientationday-768\.webp$/);
+          for (const [width, columns] of [[1440, 3], [960, 2], [390, 1]]) {
+            await page.setViewportSize({ width, height: 1000 });
+            const boxes = await images.evaluateAll((elements) => elements.map((image) => image.getBoundingClientRect().toJSON()));
+            const [first] = boxes;
+            assert.equal(boxes.filter(({ top }) => top === first.top).length, columns, `Gallery column count at ${width}px`);
+            assert(boxes.every(({ width, height }) => Math.abs(width - first.width) < 1 && Math.abs(height - first.height) < 1),
+              `Gallery images have equal sizes at ${width}px`);
+          }
+          await page.setViewportSize({ width: 1440, height: 1000 });
         }
         if (slug === 'members') {
+          const photo = page.getByRole('main').getByRole('img', { name: launchImage.copy[locale].alt, exact: true });
+          assert.equal(await photo.getAttribute('src'), launchImage.image.src);
           if (members.length) {
             assert.deepEqual(await page.locator('main h2').allTextContents(), members.map(({ name }) => name));
           } else {

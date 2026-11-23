@@ -1,13 +1,13 @@
 ---
 import DefaultPage from '../../layouts/DefaultPage.astro';
-import { meetingImage } from '../../data/images';
+import { launchImage } from '../../data/images';
 import { members } from '../../data/members';
 import { getLocale, useTranslations } from '../../i18n';
 
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 ---
-<DefaultPage slug="members" image={meetingImage.image.src}>
+<DefaultPage slug="members" image={launchImage.href}>
   <div class="roster">
     {members.length ? (
       <ul class="people" role="list">
@@ -21,7 +21,8 @@ const t = useTranslations(locale);
     ) : (
       <p>{t('members.empty')}</p>
     )}
-    <img {...meetingImage.image} alt={meetingImage.copy[locale].alt} decoding="async" />
+    <img {...launchImage.image} alt={launchImage.copy[locale].alt}
+      sizes="(min-width: 85em) 580px, (min-width: 52em) 45vw, 90vw" decoding="async" />
   </div>
 </DefaultPage>
 

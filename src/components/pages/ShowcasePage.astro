@@ -3,13 +3,14 @@ import DefaultPage from '../../layouts/DefaultPage.astro';
 import { getShowcaseImages, launchImage } from '../../data/images';
 
 const images = getShowcaseImages(Astro.currentLocale);
+const imageSizes = '(min-width: 85em) 358px, (min-width: 68em) 30vw, (min-width: 52em) 44vw, 90vw';
 ---
 <DefaultPage slug="showcase" image={launchImage.href}>
   <ul class="gallery" role="list">
     {images.map(({ caption, href, image, alt }, index) => (
       <li>
         <figure>
-          <img {...image} alt={alt} sizes={image.srcset ? '(min-width: 85rem) 1232px, 90vw' : undefined}
+          <img {...image} alt={alt} sizes={image.srcset ? imageSizes : undefined}
             loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : undefined} decoding="async" />
           <figcaption><a href={href ?? image.src}>{caption}</a></figcaption>
         </figure>
@@ -22,6 +23,7 @@ const images = getShowcaseImages(Astro.currentLocale);
   .gallery {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 1fr;
     gap: clamp(1rem, 3vw, 2rem);
     list-style: none;
     padding: 0;
@@ -45,7 +47,6 @@ const images = getShowcaseImages(Astro.currentLocale);
     object-fit: cover;
     border-radius: 1.125rem .25rem;
   }
-  li:first-child img { object-position: center 46%; }
   figcaption {
     padding: .75rem .25rem .125rem;
     font-size: var(--text-ui);
@@ -60,7 +61,8 @@ const images = getShowcaseImages(Astro.currentLocale);
   }
   @media (min-width: 52em) {
     .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    li:first-child { grid-column: 1 / -1; }
-    li:first-child img { aspect-ratio: 2 / 1; }
+  }
+  @media (min-width: 68em) {
+    .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 </style>
