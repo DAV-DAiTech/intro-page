@@ -1,42 +1,19 @@
 import assert from 'node:assert/strict';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { spawn } from 'node:child_process';
 import { chromium } from '@playwright/test';
+import { preview } from 'astro';
 import { checkAccessibility } from './accessibility.mjs';
 import { checkLocales } from './locales.mjs';
 
-const findBrowser = () => {
-  const candidates = [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
-  const cacheDir = join(homedir(), '.cache', 'ms-playwright');
-  if (existsSync(cacheDir)) {
-    for (const dir of readdirSync(cacheDir).sort().reverse()) {
-      if (dir.startsWith('chromium_headless_shell-')) candidates.push(join(cacheDir, dir, 'chrome-headless-shell-linux64', 'chrome-headless-shell'));
-      if (dir.startsWith('chromium-')) candidates.push(join(cacheDir, dir, 'chrome-linux64', 'chrome'));
-    }
-  }
-  return candidates.find((path) => existsSync(path));
-};
-
-const baseUrl = 'http://127.0.0.1:4322';
-const server = spawn('pnpm', ['exec', 'astro', 'preview', '--host', '127.0.0.1', '--port', '4322'], { stdio: 'pipe' });
-let serverOutput = '';
-server.stdout.on('data', (data) => { serverOutput += data; });
-server.stderr.on('data', (data) => { serverOutput += data; });
+const executablePath = [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser']
+  .find((path) => path && existsSync(path));
+const host = '127.0.0.1';
+const server = await preview({ server: { host, port: 0 }, logLevel: 'silent' });
+const baseUrl = `http://${host}:${server.port}`;
 let browser;
 try {
-  let ready = false;
-  for (let attempt = 0; attempt < 60; attempt++) {
-    try {
-      const response = await fetch(baseUrl);
-      if (response.ok) { ready = true; break; }
-    } catch { }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-  assert(ready, `Production preview must start: ${serverOutput}`);
-  browser = await chromium.launch({ executablePath: findBrowser(), headless: true, args: ['--no-sandbox', '--disable-gpu', '--disable-crash-reporter'] });
+  browser = await chromium.launch({ executablePath, headless: true, args: ['--no-sandbox', '--disable-gpu', '--disable-crash-reporter'] });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -163,6 +140,9 @@ try {
   assert.deepEqual(errors, [], 'No JavaScript errors');
   console.log('Passed: product links, filters, dialogs, focus restoration, images, reduced motion, 5 responsive widths, and independent reusable collections.');
 } finally {
-  await browser?.close();
-  server.kill('SIGTERM');
+  try {
+    await browser?.close();
+  } finally {
+    await server.stop();
+  }
 }
