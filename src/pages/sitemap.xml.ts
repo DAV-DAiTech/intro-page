@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
-import { homePath, locales } from '../i18n';
+import { defaultLocale, homePath, locales } from '../i18n';
 
 export const GET: APIRoute = ({ site }) => {
   const alternates = [...locales, 'x-default']
-    .map((locale) => `    <xhtml:link rel="alternate" hreflang="${locale}" href="${new URL(homePath(locale), site)}" />`)
+    .map((locale) => `    <xhtml:link rel="alternate" hreflang="${locale}" href="${new URL(homePath(locale === 'x-default' ? defaultLocale : locale), site)}" />`)
     .join('\n');
   const urls = locales
     .map((locale) => `  <url>\n    <loc>${new URL(homePath(locale), site)}</loc>\n${alternates}\n    <priority>1.0</priority>\n  </url>`)

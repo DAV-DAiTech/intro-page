@@ -107,7 +107,7 @@ src/
 │   └── preferences.js     # Pre-paint preference loader and dialog fallbacks
 ├── styles/
 │   └── global.css         # Design tokens, themes, resets, a11y, and print rules
-└── i18n.ts                # Complete dictionaries and locale helpers
+└── i18n.ts                # Shared site translations and locale helpers
 tests/
 ├── accessibility.mjs      # Axe WCAG 2.2 AA, zoom, spacing, forced-colors checks
 ├── browser.mjs            # E2E functional, responsive, and multi-collection tests
@@ -121,29 +121,14 @@ tests/
 The site is structured so you can fork or update it without digging through component markup:
 
 - **Domain**: Set `site` in [`astro.config.mjs`](./astro.config.mjs).
-- **Copy and translations**: Managed in [`src/i18n.ts`](./src/i18n.ts).
-- **Products**: Managed in [`src/data/products.ts`](./src/data/products.ts).
+- **Shared site translations**: Managed in [`src/i18n.ts`](./src/i18n.ts).
+- **Product definitions and localized copy**: Managed in [`src/data/products.ts`](./src/data/products.ts).
 - **Theme tokens**: Managed in the `:root` block of [`src/styles/global.css`](./src/styles/global.css). The `<meta name="theme-color">` tags in [`BaseLayout.astro`](./src/layouts/BaseLayout.astro) read `--canvas: light-dark(...)` directly from `global.css` at build time.
 - **Static assets**: Images and font licenses live in [`public/`](./public).
 
 ### Adding a product
 
-Add the product strings to both dictionaries in [`src/i18n.ts`](./src/i18n.ts) and an entry to the array returned by `getProducts(locale)` in [`src/data/products.ts`](./src/data/products.ts):
-
-```ts
-{
-  id: 'match',
-  preview: 'match',
-  name: t('products.match.name'),
-  category: t('products.match.category'),
-  icon: 'heart', // Checked against IconName from src/components/Icon.astro
-  summary: t('products.match.summary'),
-  description: t('products.match.description'),
-  url: 'https://dav-club-match.vercel.app/',
-  detail: t('products.match.detail'),
-  link: t('products.match.link')
-}
-```
+Add an entry to the `products` array in [`src/data/products.ts`](./src/data/products.ts). Put the product’s name, summary, description, detail text, and action button label in its `copy.en` and `copy.vi` objects. Set `categoryKey` to a category in [`src/i18n.ts`](./src/i18n.ts), adding the category to both dictionaries if needed.
 
 Category filter buttons, product counts, detail dialogs and the JSON-LD ItemList in [`HomePage.astro`](./src/components/pages/HomePage.astro) all derive from this.
 
@@ -153,7 +138,7 @@ To render multiple independent product lists on the same page or across pages, p
 
 Astro's i18n routing serves Vietnamese by default at `/` and English at `/en/`. Both routes share the templates in [`src/components/pages/`](./src/components/pages/). Translation keys and interpolation placeholders are checked by the test suite.
 
-The header links between the two languages. Reading preferences stay in the same browser storage across both routes. Each homepage includes its canonical URL, localized social metadata and structured data, the sitemap lists both versions.
+The header links between the two languages. Reading preferences stay in the same browser storage across both routes. Each homepage includes its canonical URL, localized social metadata, and structured data. The sitemap lists both versions.
 
 Vietnamese headings use the bundled Lexend font because Special Gothic Expanded One does not include Vietnamese glyphs. Inter and Lexend's Vietnamese subsets are preloaded on Vietnamese pages.
 

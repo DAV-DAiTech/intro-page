@@ -1,11 +1,12 @@
 import { defineConfig } from 'astro/config';
+import { defaultLocale, locales } from './src/i18n.ts';
 
 export default defineConfig({
   site: 'https://dav-daitech.github.io',
   output: 'static',
   i18n: {
-    defaultLocale: 'vi',
-    locales: ['vi', 'en'],
+    defaultLocale,
+    locales: [...locales],
     routing: { prefixDefaultLocale: false }
   },
   logger: { entrypoint: './tooling/logger.mjs' },

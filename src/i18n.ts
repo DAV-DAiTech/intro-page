@@ -1,5 +1,4 @@
 export const en = {
-  'site.lang': 'en',
   'site.name': 'DAiTech',
   'site.orgDescription': 'AI and Technology Club at the Diplomatic Academy of Vietnam.',
   'meta.title': 'DAiTech - Ideas into everyday possibilities',
@@ -103,7 +102,6 @@ export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export const vi = {
-  'site.lang': 'vi',
   'site.name': 'DAiTech',
   'site.orgDescription': 'Câu lạc bộ AI và Công nghệ Học viện Ngoại giao.',
   'meta.title': 'DAiTech - Ý tưởng mới cho cuộc sống ở DAV',
@@ -205,17 +203,22 @@ export const vi = {
 
 export const locales = ['vi', 'en'] as const;
 export type Locale = (typeof locales)[number];
-export const getLocale = (locale?: string): Locale => locale === 'en' ? 'en' : 'vi';
-export const homePath = (locale?: string): string => getLocale(locale) === 'en' ? '/en/' : '/';
-export const useTranslations = (locale?: string) =>
-  (key: TranslationKey, params?: Record<string, string | number>): string =>
-    t(key, params, getLocale(locale) === 'vi' ? vi : en);
+export const defaultLocale: Locale = 'vi';
+const messages = { en, vi };
 
-export const t = (
-  key: TranslationKey,
-  params?: Record<string, string | number>,
-  dict: Translations = vi
-): string =>
-  params
-    ? dict[key].replace(/\{(\w+)\}/g, (_, k: string) => String(params[k] ?? ''))
-    : dict[key];
+export const getLocale = (locale?: string): Locale => locale === 'en' ? 'en' : defaultLocale;
+
+export const homePath = (locale?: string): string => {
+  const language = getLocale(locale);
+  return language === defaultLocale ? '/' : `/${language}/`;
+};
+
+export const useTranslations = (locale?: string) => {
+  const dictionary = messages[getLocale(locale)];
+  return (key: TranslationKey, params?: Record<string, string | number>): string => {
+    const message = dictionary[key];
+    return params ? message.replace(/\{(\w+)\}/g, (_, name: string) =>
+      Object.hasOwn(params, name) ? String(params[name] ?? '') : ''
+    ) : message;
+  };
+};
