@@ -1,4 +1,5 @@
 ---
+import ContactPage from '../components/pages/ContactPage.astro';
 import MembersPage from '../components/pages/MembersPage.astro';
 import ProjectsPage from '../components/pages/ProjectsPage.astro';
 import ShowcasePage from '../components/pages/ShowcasePage.astro';
@@ -12,7 +13,7 @@ export function getStaticPaths() {
 }
 
 interface Props { slug: ClubPage; }
-const pages = { projects: ProjectsPage, showcase: ShowcasePage, members: MembersPage };
+const pages = { projects: ProjectsPage, showcase: ShowcasePage, members: MembersPage, contact: ContactPage };
 const Page = pages[Astro.props.slug];
 ---
 <Page />

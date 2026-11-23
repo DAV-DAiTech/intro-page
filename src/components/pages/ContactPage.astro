@@ -1,0 +1,19 @@
+---
+import ContactLinks from '../layout/ContactLinks.astro';
+import DefaultPage from '../../layouts/DefaultPage.astro';
+---
+<DefaultPage slug="contact">
+  <div class="contact-panel">
+    <ContactLinks stacked />
+  </div>
+</DefaultPage>
+
+<style>
+  .contact-panel {
+    max-inline-size: 42rem;
+    padding: clamp(.5rem, 2.5vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
+    border-radius: 1.75rem .5rem;
+    background: var(--surface);
+    color: var(--text);
+  }
+</style>

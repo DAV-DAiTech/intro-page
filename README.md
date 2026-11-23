@@ -93,13 +93,14 @@ src/
 ├── data/
 │   ├── products.ts        # Typed product catalogue
 │   ├── members.ts         # Public club roster
-│   └── images.ts          # Shared images and localized showcase entries
+│   ├── images.ts          # Shared images and localized showcase entries
+│   └── contact.ts         # Email, social profiles, and icons
 ├── layouts/
 │   ├── BaseLayout.astro   # HTML shell, SEO/OG tags, font preloads, inline init
 │   └── DefaultPage.astro  # Localized club page heading and content slot
 ├── pages/
 │   ├── 404.astro          # Custom 404 page (noindex)
-│   ├── [...clubPage].astro # Localized projects, showcase, and members routes
+│   ├── [...clubPage].astro # Localized club routes
 │   ├── index.astro        # Vietnamese homepage route
 │   ├── llms.txt.ts        # Machine-readable summary for AI assistants
 │   ├── robots.txt.ts      # Dynamic robots.txt with Sitemap URL
@@ -138,9 +139,11 @@ To render multiple independent product lists on the same page or across pages, p
 
 ### Club pages
 
-Projects, Image showcase, and Member list share [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). It uses the slug to look up the localized title and description and renders content through its default slot. The [club page route](./src/pages/%5B...clubPage%5D.astro) generates both languages from the page list in `src/i18n.ts`.
+Projects, Image showcase, Member list and Contact share [`DefaultPage.astro`](./src/layouts/DefaultPage.astro). It uses the slug to look up the localized title and description and renders content through its default slot. The [club page route](./src/pages/%5B...clubPage%5D.astro) generates both languages from the page list in `src/i18n.ts`.
 
 The Projects page reads the existing product catalogue. Edit the showcase entries in [`images.ts`](./src/data/images.ts) and add roster entries to [`members.ts`](./src/data/members.ts). Each roster entry needs a name and can include a role in both languages.
+
+The Contact page and footer share the links in [`contact.ts`](./src/data/contact.ts).
 
 ### Languages
 
@@ -175,6 +178,8 @@ All source code in this repository is licensed under the [MIT License](./LICENSE
 Maintainer: [Jarema (@0jar)](https://jarema.me/)
 
 Visual direction is in large part inspired by [Larkin](https://larkin.alderthemes.com/).
+
+The GitHub and Facebook icons come from [Simple Icons](https://simpleicons.org/) under [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md).
 
 Bundled typefaces (Inter, Special Gothic Expanded One, Atkinson Hyperlegible and Lexend) are self-hosted under the SIL Open Font License, their license texts are located in [`public/licenses/`](./public/licenses).
 

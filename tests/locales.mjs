@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import AxeBuilder from '@axe-core/playwright';
 import { clubPages, en, pagePath, vi } from '../src/i18n.ts';
+import { contactLinks } from '../src/data/contact.ts';
 import { getShowcaseImages, launchImage } from '../src/data/images.ts';
 import { members } from '../src/data/members.ts';
 import { getProducts } from '../src/data/products.ts';
@@ -167,6 +168,13 @@ export async function checkLocales(browser, baseUrl) {
             assert.deepEqual(await page.locator('main h2').allTextContents(), members.map(({ name }) => name));
           } else {
             assert(await page.locator('main').getByText(dictionary['members.empty'], { exact: true }).isVisible());
+          }
+        }
+        if (slug === 'contact') {
+          for (const landmark of ['main', 'contentinfo']) {
+            const list = page.getByRole(landmark).getByRole('list', { name: dictionary['contact.linksLabel'] });
+            assert.deepEqual(await navItems(list), contactLinks.map(({ label, url }) => [label, url]));
+            assert.equal(await list.locator('a > svg[aria-hidden="true"]:visible').count(), contactLinks.length);
           }
         }
 

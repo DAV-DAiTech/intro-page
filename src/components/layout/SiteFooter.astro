@@ -1,5 +1,6 @@
 ---
 import SiteNav from './SiteNav.astro';
+import ContactLinks from './ContactLinks.astro';
 import { homePath, useTranslations } from '../../i18n';
 
 interface Props { pageSlug?: string; }
@@ -14,7 +15,10 @@ const home = homePath(Astro.currentLocale);
       <SiteNav label={t('footer.navLabel')} pageSlug={pageSlug} />
       <a class="back-to-top" href="#top">{t('footer.backToTop')}</a>
     </div>
-    <p class="copyright">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+    <div class="footer-meta">
+      <ContactLinks />
+      <p class="copyright">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+    </div>
   </div>
 </footer>
 
@@ -27,5 +31,6 @@ const home = homePath(Astro.currentLocale);
   .footer-links :global(a) { text-decoration: underline; text-underline-offset: .2em; }
   .footer-links :global(a[aria-current='page']) { font-weight: 650; }
   .back-to-top { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-ui); }
-  .copyright { margin-top: 1.5rem; font-size: var(--text-caption); color: var(--muted); }
+  .footer-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .25rem 2rem; margin-block-start: 1rem; }
+  .copyright { font-size: var(--text-caption); color: var(--muted); }
 </style>

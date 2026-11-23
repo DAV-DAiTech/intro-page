@@ -1,0 +1,37 @@
+---
+import Icon from '../Icon.astro';
+import { contactLinks } from '../../data/contact';
+import { useTranslations } from '../../i18n';
+
+interface Props { stacked?: boolean; }
+const { stacked = false } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+---
+<ul class:list={['contact-links', { stacked }]} role="list" aria-label={t('contact.linksLabel')}>
+  {contactLinks.map(({ label, url, icon }) => (
+    <li><a href={url}><Icon name={icon} size={18} /><span>{label}</span></a></li>
+  ))}
+</ul>
+
+<style>
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    min-block-size: 44px;
+    font-size: var(--text-ui);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
+  .stacked { display: grid; gap: 0; }
+  .stacked li + li { border-block-start: 1px solid var(--line); }
+  .stacked a { padding: .75rem .25rem; font-weight: 650; }
+</style>

@@ -19,6 +19,9 @@ export const en = {
   'pages.showcase.description': 'See DAiTech’s launch, first club meeting, and club artwork.',
   'pages.members.title': 'Member list',
   'pages.members.description': 'Meet the students behind DAiTech.',
+  'pages.contact.title': 'Contact',
+  'pages.contact.description': 'Email DAiTech, message us on Facebook or Instagram, or explore our projects on GitHub.',
+  'contact.linksLabel': 'DAiTech contact links',
   'members.empty': 'The member list has yet to be published.',
   'a11y.triggerLabel': 'Accessibility settings',
   'a11y.trigger': 'Accessibility',
@@ -126,6 +129,9 @@ export const vi = {
   'pages.showcase.description': 'Xem hình ảnh lễ ra mắt, buổi gặp mặt đầu tiên và tranh minh họa của DAiTech.',
   'pages.members.title': 'Danh sách thành viên',
   'pages.members.description': 'Gặp gỡ những sinh viên đứng sau DAiTech.',
+  'pages.contact.title': 'Liên hệ',
+  'pages.contact.description': 'Gửi email hoặc nhắn tin cho DAiTech qua Facebook hay Instagram. Bạn cũng có thể khám phá các dự án của chúng mình trên GitHub.',
+  'contact.linksLabel': 'Các kênh liên hệ của DAiTech',
   'members.empty': 'Danh sách thành viên chưa được công bố.',
   'a11y.triggerLabel': 'Cài đặt trợ năng',
   'a11y.trigger': 'Trợ năng',
@@ -231,7 +237,7 @@ export const useTranslations = (locale?: string) => {
   };
 };
 
-export const clubPages = ['projects', 'showcase', 'members'] as const;
+export const clubPages = ['projects', 'showcase', 'members', 'contact'] as const;
 export type ClubPage = (typeof clubPages)[number];
 
 export const pagePath = (locale?: string, slug = ''): string =>
