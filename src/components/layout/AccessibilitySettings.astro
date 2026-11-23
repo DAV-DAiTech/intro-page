@@ -47,9 +47,5 @@ const fields = [
   input { width: 1.25rem; height: 1.25rem; flex-shrink: 0; accent-color: var(--plum); }
   .motion-field p { font-size: var(--text-small); color: var(--muted); margin-top: .25rem; }
   .reset-preferences { background: var(--plum); color: var(--on-plum); border-color: var(--control-border); }
-  @media (max-width: 44em) {
-    .settings-trigger { padding: .625rem; }
-    .settings-trigger span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-    .settings-dialog { padding-inline: 1.25rem; }
-  }
+  @media (max-width: 44em) { .settings-dialog { padding-inline: 1.25rem; } }
 </style>

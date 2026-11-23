@@ -4,7 +4,7 @@ This is the product landing page for DAiTech, the AI and Technology Club at the 
 
 ## Architecture
 
-Astro renders pages to static HTML at build time. Small vanilla scripts handle reading preferences and product filters.
+Astro renders pages to static HTML at build time. Small vanilla scripts handle reading preferences, navigation, and product filters.
 
 ### Key points
 

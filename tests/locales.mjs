@@ -244,7 +244,11 @@ export async function checkLocales(browser, baseUrl) {
     await context.close();
   }
 
-  const noScript = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
+  const noScript = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 900 },
+    reducedMotion: 'reduce'
+  });
   try {
     const staticPage = await noScript.newPage();
     await staticPage.goto(`${baseUrl}/en/`);
@@ -254,6 +258,13 @@ export async function checkLocales(browser, baseUrl) {
     assert.equal(await staticPage.locator('html').getAttribute('lang'), 'vi', 'Language switching works without JavaScript');
     assert.equal(await staticPage.locator('.product-launch:visible').count(), products.length);
     await staticHeader.locator('summary').click();
+    await staticHeader.getByRole('link', { name: vi['nav.products'], exact: true }).click();
+    await staticPage.waitForURL(`${baseUrl}/#products`);
+    assert(await staticPage.locator('#products-title').evaluate((heading) => {
+      const { x, y } = heading.getBoundingClientRect();
+      return heading.contains(document.elementFromPoint(x + 1, y + 1));
+    }), 'The no-script mobile menu leaves the anchored heading visible');
+    await staticPage.evaluate(() => window.scrollTo(0, 0));
     await staticHeader.getByRole('link', { name: vi['pages.projects.title'], exact: true }).click();
     await staticPage.waitForURL(`${baseUrl}/projects/`);
     const projects = getProjects('vi');

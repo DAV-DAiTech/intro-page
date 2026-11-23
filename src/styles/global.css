@@ -68,7 +68,7 @@
 }
 *, ::before, ::after { box-sizing: border-box; }
 html { scroll-padding-block-start: calc(var(--site-header-height, 6rem) + .75rem); scrollbar-color: light-dark(var(--canvas), var(--control-border)) var(--surface); }
-@media (max-height: 24em) { html { scroll-padding-block-start: 1.75rem; } }
+@media (scripting: none), (max-height: 24em) { html { scroll-padding-block-start: 1.75rem; } }
 body { margin: 0; font-size: var(--text-body); line-height: 1.65; overflow-x: clip; }
 button, input, select { font: inherit; color: inherit; }
 button, a, input, select { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -110,5 +110,5 @@ button:disabled { cursor: default; }
 @media print {
   :root { --canvas: #fff; --canvas-text: #000; --canvas-muted: #000; --surface: #fff; --text: #000; --muted: #000; --line: #999; --control-border: #000; }
   .club-notes { background: #fff !important; color: #000 !important; border: 1px solid #000; }
-  :is(.skip-link, .settings-trigger, .nav-cta, .filters, .details-button, .club-seal, dialog) { display: none !important; }
+  :is(.skip-link, .settings-trigger, .filters, .details-button, .club-seal, dialog) { display: none !important; }
 }
