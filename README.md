@@ -38,8 +38,8 @@ The canonical domain is set via `site` in [`astro.config.mjs`](./astro.config.mj
 
 ### Prerequisites
 
-- Node.js 22.19+
-- pnpm (preferred) or npm
+- Node.js 22.23.4+
+- pnpm
 
 ### Installation
 
@@ -50,10 +50,10 @@ pnpm install
 # Start development server
 pnpm dev
 
-# Build for production
-pnpm build
+# Install Chromium for tests if Chrome or Chromium is unavailable
+pnpm exec playwright install chromium
 
-# Run browser and accessibility test suite
+# Build and run the browser and accessibility test suite
 pnpm test
 ```
 
@@ -64,7 +64,7 @@ pnpm test
 | `pnpm dev`     | Start dev server at `localhost:4321`                         |
 | `pnpm build`   | Build production output to `./dist/`                         |
 | `pnpm preview` | Preview the production build locally                         |
-| `pnpm test`    | Run Playwright browser, responsive, and accessibility checks |
+| `pnpm test`    | Build and run browser, responsive, and accessibility checks  |
 
 ## Project structure
 
